@@ -1,0 +1,143 @@
+:root {
+  --main_color: #d64161;
+  --white: #ffffff;
+}
+
+
+html, body {
+    font-family: "Lucida Console", "Courier New", monospace;
+    background-color: black;
+    color: var(--main_color);
+}
+
+h3 {
+    color: white;
+}
+
+a {
+  color: white;
+}
+
+a:hover {
+  color: var(--main_color);
+}
+
+.image_field {
+    margin-top: 3vh;
+    padding: 10px;
+    background-color: #black;
+    text-align: center;
+}
+
+.navbar-brand {
+    margin-left: 2vw;
+    color: var(--main_color);
+}
+
+.nav-link {
+    margin-left:2vw;
+    color: var(--main_color);
+}
+
+.nav-link-user {
+    color: grey;
+}
+
+.navbar-collapse {
+    margin-left:2vw;
+}
+
+/* hide alert banner after messages has been flashed */
+@keyframes alert-response{
+    from {opacity :1;}
+    to {opacity :0;}
+}
+
+.alert {
+    color: #970020;
+    background-color: #ffd5de;
+}
+
+.success {
+    color: #006400;
+    background-color: #90ee90;
+}
+
+.flasher {
+    font-size: 1.5em;
+    padding-left: 10%;
+    padding-right: 10%;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    position: absolute;
+    float: left;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    animation:alert-response 4s 1;
+    -webkit-animation:alert-response 4s 1;
+    animation-fill-mode: forwards;
+}
+
+.del_but {
+    text-align: center;
+}
+
+.container{
+    margin-top: 5%;
+    width: 75%;
+}
+
+
+/* Style the submit button */
+input[type=submit]{
+  margin-top: 0vh;
+  background-color: var(--main_color);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  float: left;
+}
+
+
+#image_parent{
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   position: relative;
+   width: 100%;
+   height: 100%;
+}
+
+#image_child{
+   position: relative;
+   align-items: center;
+}
+
+img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 90%;
+    height: auto;
+}
+
+.image_view_quote{
+    margin-top: 15%;
+}
+
+.spinner-border {
+    visibility: hidden;
+    width: 5rem;
+    height: 5rem;
+    position: absolut;
+    top: 50%;
+    left: 45%;
+}
+
+.form-control{
+    max-width: 500px;
+}
