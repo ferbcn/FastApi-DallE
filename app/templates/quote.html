@@ -2,6 +2,8 @@
 
 {% block content %}
 
+<script src="{{ url_for('static', path='quote.js') }}"></script>
+
 <div class="container">
   <div id="parent">
     <div id="child">
@@ -15,26 +17,24 @@
         </h1>
 
         <br>
-        <h3><i>{{ quote.quote }}</i></h3>
+        <i><h3 id="quote">{{ quote.quote }}</h3></i>
 
         <br>
-        <h5>{{ quote.author }}</h5>
+        <h5 id="author">{{ quote.author }}</h5>
 
         <br>
-        <form method="post" onSubmit="return handleClick()">
-            <input type="hidden" name="quote" value="{{ quote.quote }}">
-            <input type="hidden" name="author" value="{{ quote.author }}">
+        <form action="" onSubmit="handleClick(event)">
+            <input type="hidden" name="quote">
+            <input type="hidden" name="author">
             <input type="submit" value="Generate Image">
         </form>
 
         <br>
-        <div class="image_view image_view_quote">
-            {% if image %}
-                <div class='image_field'>
-                    <h3>{{ image['title'] }}</h3>
-                    <img src="{{ image['url'] }}"/>
-                </div>
-            {% endif %}
+        <br>
+        <div class="image_view">
+            <div class='image_field'>
+                <div id="quoteImage">
+            </div>
         </div>
 
     </div>

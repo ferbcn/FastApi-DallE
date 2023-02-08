@@ -3,3 +3,9 @@ jinja2
 uvicorn[standard]
 websockets
 requests
+sqlalchemy
+openai
+boto3
+werkzeug
+psycopg2-binary
+python-multipart

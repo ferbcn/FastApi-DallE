@@ -1,7 +1,4 @@
-var waiting = false;
 var last_img_id = 0;
-
-var socket = io();
 
 function handleDelete(image_id){
 
@@ -16,11 +13,7 @@ window.onscroll = function() {
 
     if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight && !waiting) {
 
-        //var socket = io();
         // websockets send more images
-        socket.emit('my_event', {data: last_img_id});
-        waiting = true;
-
         var element = document.getElementById("spinner");
         element.style.position = "absolut";
         element.style.top = "500px";
@@ -29,10 +22,9 @@ window.onscroll = function() {
     }
 }
 
-// load image feed
-socket.on('image feed', images => {
     //alert(images['title']);
     //images.forEach(add_image);
+    /*
     var all_nodes = [];
     for (var i=0; i<images.length; i++){
         //var node = "<div class='image_field'><center><h3>" + images[i]['title'] + "</h3></center><img src='data:image;base64," + images[i]['data'] + "'/></div>";
@@ -65,7 +57,6 @@ socket.on('image feed', images => {
     document.getElementById('spinner').style.visibility = 'hidden';
     waiting = false;
 
-});
 
 
 document.addEventListener("DOMContentLoaded", function(event) {
@@ -80,6 +71,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
     //list.removeChild(list.lastChild);
     // and get teh id of last image in list
     //last_img_id = document.getElementById("image_child").lastChild.id;
-    last_img_id = document.getElementById("image_child").lastChild.previousSibling.id;
-});
-
+    //last_img_id = document.getElementById("image_child").lastChild.previousSibling.id;
