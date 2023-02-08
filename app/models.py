@@ -3,7 +3,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Text, Large
 
 from datetime import datetime
 
-from database import Base
+from my_database import Base
 
 
 class UserModel(Base):

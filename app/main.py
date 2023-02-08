@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from database import SessionLocal, engine
+from my_database import SessionLocal, engine
 from sqlalchemy.orm import Session
 
 import crud
