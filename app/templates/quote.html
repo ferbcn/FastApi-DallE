@@ -2,6 +2,7 @@
 
 {% block content %}
 
+<script src="{{ url_for('static', path='scripts.js') }}"></script>
 <script src="{{ url_for('static', path='quote.js') }}"></script>
 
 <div class="container">
@@ -17,15 +18,13 @@
         </h1>
 
         <br>
-        <i><h3 id="quote">{{ quote.quote }}</h3></i>
+        <i><h3 id="input_text">{{ quote.quote }}</h3></i>
 
         <br>
         <h5 id="author">{{ quote.author }}</h5>
 
         <br>
         <form action="" onSubmit="handleClick(event)">
-            <input type="hidden" name="quote">
-            <input type="hidden" name="author">
             <input type="submit" value="Generate Image">
         </form>
 
@@ -33,7 +32,7 @@
         <br>
         <div class="image_view">
             <div class='image_field'>
-                <div id="quoteImage">
+                <div id="generatedImage">
             </div>
         </div>
 

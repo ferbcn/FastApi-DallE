@@ -120,7 +120,8 @@ def logout(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
-@app.websocket("/q2i")
+# Websocket endpoint QUOTE IMAGE
+@app.websocket("/text2image")
 async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
     await websocket.accept()
 
@@ -130,18 +131,21 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
 
         # await for messages and send messages
         while True:
-            quote = await websocket.receive_text()
-            if quote.lower() == "close":
+            text = await websocket.receive_text()
+            if text.lower() == "close":
                 await websocket.close()
                 break
             else:
-                print(f'CLIENT says - {quote}')
-                img_url = get_dalle_image_url(quote)
-                #img_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-OSSLxbVdVYcONWAYgACXE7BX/user-xe35vqrSPvSsPUEOnVK0Uwov/img-tpCOtVol5LsixwSZRrKvqnYN.png?st=2023-02-08T12%3A23%3A28Z&se=2023-02-08T14%3A23%3A28Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-07T21%3A30%3A10Z&ske=2023-02-08T21%3A30%3A10Z&sks=b&skv=2021-08-06&sig=QECDlgMyB6ThTSbTynoDk/uOe2z9866IHV6NlPrWWts%3D"
-                print(img_url)
+                print(f'CLIENT says - {text}')
+                try:
+                    img_url = get_dalle_image_url(text)
+                    #img_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-OSSLxbVdVYcONWAYgACXE7BX/user-xe35vqrSPvSsPUEOnVK0Uwov/img-tpCOtVol5LsixwSZRrKvqnYN.png?st=2023-02-08T12%3A23%3A28Z&se=2023-02-08T14%3A23%3A28Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-07T21%3A30%3A10Z&ske=2023-02-08T21%3A30%3A10Z&sks=b&skv=2021-08-06&sig=QECDlgMyB6ThTSbTynoDk/uOe2z9866IHV6NlPrWWts%3D"
+                    print(img_url)
+                except Exception as e:
+                    print(f'Could not get image url for {text}')
+                    print(e)
 
-                # retrieve image make filename and upload file to S3 and DB
-                filename = make_filename(quote)
+                filename = make_filename(text)
                 try:
                     response = requests.get(img_url, stream=True)
                     data = response.content
@@ -155,7 +159,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                     print(e)
                 # add file to db
                 try:
-                    save_image_in_db(db=db, title=quote, filename=filename, data=data)
+                    save_image_in_db(db=db, title=text, filename=filename, data=data)
                 except Exception as e:
                     print('Could not save image to DB')
                     print(e)
@@ -166,6 +170,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
 
     except WebSocketDisconnect:
         print("Client disconnected")
+
 
 
 if __name__ == '__main__':

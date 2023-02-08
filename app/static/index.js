@@ -1,19 +1,25 @@
 var last_img_id = 0;
 
 function handleDelete(image_id){
-
         const image = document.getElementById(image_id);
         const list = document.getElementById("image_child");
         list.removeChild(image);
         socket.emit('delete_event', {data: image_id});
     }
 
+// ON start 5 images are loaded into the queue
+
 // window scroll detect
 window.onscroll = function() {
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight && !waiting) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
 
-        // websockets send more images
+        // Pre: Images are loaded in the queue
+        // add images to feed
+        // remove images from queue
+        // load new images into queue
+
+        // if queue is emtpy load waiting pinner
         var element = document.getElementById("spinner");
         element.style.position = "absolut";
         element.style.top = "500px";
