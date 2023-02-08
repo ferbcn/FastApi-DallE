@@ -1,12 +1,11 @@
-var text2image = new WebSocket("ws://0.0.0.0:8000/text2image");
-// var ws = new WebSocket("wss://art-intel.site/ws");
+//var text2image = new WebSocket("wss://art-intel.site/text2image");
+var text2image = new WebSocket("ws://192.168.1.111:8000/text2image");
 
 
 function handleDelete(image_id){
     const image = document.getElementById(image_id);
-    const list = document.getElementById("quoteImage");
+    const list = document.getElementById("generatedImage");
     list.removeChild(image);
-    // socket.emit('delete_event', {data: image_id});
 }
 
 var img_id = 1;
