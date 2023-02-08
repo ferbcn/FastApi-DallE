@@ -2,7 +2,7 @@ var moreImages = new WebSocket("ws://192.168.1.111:8000/moreImages");
 // var ws = new WebSocket("wss://art-intel.site/ws");
 
 var last_img_id;
-var current_image_offset = 10; // Initially 10 images are loaded onto the html tamplate
+var current_image_offset = 5; // Initially 10 images are loaded onto the html tamplate
 var waiting_for_image = false;
 
 
@@ -19,7 +19,7 @@ var image_queue = [];
 document.addEventListener("DOMContentLoaded", function(event) {
     // Get first queue elements
     moreImages.send(current_image_offset);
-    current_image_offset += 1;
+    //current_image_offset += 1;
     waiting_for_image = true;
 });
 
@@ -28,11 +28,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 // Load queue with images
 window.onscroll = function() {
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight && waiting_for_image == false) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000 && waiting_for_image == false) {
 
         // Pre: Images are loaded in the queue
         // load new images into queue
         moreImages.send(current_image_offset);
+        //current_image_offset += 1;
         waiting_for_image = true;
 
         // if queue is emtpy load waiting pinner

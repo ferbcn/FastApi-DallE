@@ -60,7 +60,7 @@ def create_user(username, password, db: Session = Depends(get_db)):
 
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request, skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = crud.get_images_from_db(db, skip=skip, limit=limit)
     print(images)
     # return render_template('index.html', images=images, user_auth=user_auth)
@@ -181,8 +181,7 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
                 images = crud.get_images_from_db(db, skip=current_image_offset, limit=5)
                 for image in images:
                     json_object = {"title": image.title, "rendered_data":image.rendered_data, "id":image.id}
-                    # json_object = json.dumps(images)
-                    print(f'Sending {image} to client websocket.')
+                    # print(f'Sending {image} to client websocket.')
                     await websocket.send_json(json_object)
 
     except WebSocketDisconnect:
@@ -194,9 +193,9 @@ if __name__ == '__main__':
     # run SSL server
     """
     uvicorn.run(
-        'main:app', port=443, host='0.0.0.0',
-        ssl_keyfile='app/key.pem',
-        ssl_certfile='app/cert.pem',
+        'main:app', port=443, host='192.168.1.111',
+        ssl_keyfile='cert/key.pem',
+        ssl_certfile='cert/cert.pem',
     )
     """
     uvicorn.run(
