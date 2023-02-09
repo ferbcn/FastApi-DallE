@@ -44,8 +44,13 @@ def save_image_in_db(db, title, data, filename, url=""):
     return db_item
 
 
-def get_db_stats(db):
+def get_db_image_count(db):
     num_images = db.query(FileContent).count()
+    return num_images
+
+
+def get_db_stats(db):
+    num_images = get_db_image_count(db)
     last_image = db.query(FileContent).order_by(-FileContent.id).first()
     total_images = last_image.id
     return total_images, num_images
