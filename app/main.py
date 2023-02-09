@@ -22,12 +22,11 @@ openai.api_key = os.environ.get("OPENAI_KEY")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
+import helpers
+import crud
 import models
 import my_database
 models.Base.metadata.create_all(bind=my_database.engine)
-
-import crud
-import helpers
 
 
 # Dependency
