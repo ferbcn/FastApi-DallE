@@ -186,7 +186,7 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
 
 if __name__ == '__main__':
     # run SSL server
-
+    """
     uvicorn.run(
         'main:app', port=443, host='192.168.1.111',
         ssl_keyfile='cert/key.pem',
@@ -197,4 +197,4 @@ if __name__ == '__main__':
         'main:app', port=8000, host='192.168.1.111',
         reload=True,
     )
-    """
+

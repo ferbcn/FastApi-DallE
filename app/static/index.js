@@ -1,5 +1,6 @@
-var moreImages = new WebSocket("ws://192.168.1.111:8000/moreImages");
-// var ws = new WebSocket("wss://art-intel.site/ws");
+//var moreImages = new WebSocket("ws://192.168.1.111:8000/moreImages");
+var moreImages = new WebSocket("wss://art-intel.site/moreImages");
+
 
 var last_img_id;
 var current_image_offset = 5; // Initially 10 images are loaded onto the html tamplate
