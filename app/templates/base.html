@@ -34,11 +34,6 @@
                     Create
                 </a>
             </ul>
-            <!--<ul class="navbar-nav">
-                <a class="nav-link" href="{{ url_for('edit') }}">
-                    Edit
-                </a>
-            </ul>-->
             <ul class="navbar-nav">
                 <a class="nav-link" href="{{ url_for('about') }}">
                     About
@@ -52,7 +47,7 @@
             </ul>
             {% else %}
             <ul class="navbar-nav" >
-                <a class="nav-link nav-link-user" style="margin-right: 0;" href="{{ url_for('login') }}">
+                <a class="nav-link nav-link-user" href="{{ url_for('login') }}">
                     <i>Login</i>
                 </a>
             </ul>

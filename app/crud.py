@@ -51,8 +51,21 @@ def get_db_stats(db):
     return total_images, num_images
 
 
+def check_user_pass(db, username, password):
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+    if user is None:
+        return False
+    print(user.password_hash)
+    print(generate_password_hash(password))
+    if user.password_hash == generate_password_hash(password):
+        return True
+    else:
+        return True
+
+
 ### HELPER ###
 # needed to save the image in base64 in DB: this should be don in an object storage like S3
 def render_picture(data):
     render_pic = base64.b64encode(data).decode('ascii')
     return render_pic
+

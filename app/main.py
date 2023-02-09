@@ -3,7 +3,7 @@ import uvicorn
 import requests
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -41,12 +41,6 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return users
 
 
-@app.get("/images/")
-def get_images(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    images = get_images_from_db(db, skip=skip, limit=limit)
-    return images
-
-
 @app.post("/users/")
 def create_user(username, password, db: Session = Depends(get_db)):
     #db_user = get_user_by_username(db, username=username)
@@ -56,10 +50,9 @@ def create_user(username, password, db: Session = Depends(get_db)):
 
 
 @app.get("/", response_class=HTMLResponse)
+@app.post("/", response_class=HTMLResponse)     # needed for redirect from login
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
-    print(images)
-    # return render_template('index.html', images=images, user_auth=user_auth)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
 
 
@@ -87,9 +80,19 @@ def create(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
 
 
-@app.get("/edit/", response_class=HTMLResponse)
-def edit(request: Request):
-    return templates.TemplateResponse("edit.html", {"request": request})
+@app.get("/login/", response_class=HTMLResponse)
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
+@app.post("/login/", response_class=HTMLResponse)
+def login_post(request: Request, db: Session = Depends(get_db), username: str = Form('username'), password: str = Form('password')):
+    print("Login data received!", username, password)
+    if check_user_pass(db, username, password):
+        redirect_url = request.url_for('index')
+        return RedirectResponse(redirect_url)
+    else:
+        return templates.TemplateResponse("login.html", {"request": request})
 
 
 @app.get("/about/", response_class=HTMLResponse)
@@ -100,14 +103,15 @@ def about(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("about.html", {"request": request, "total_images":total_images, "num_images":num_images})
 
 
-@app.get("/login/", response_class=HTMLResponse)
-def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+@app.get("/signup/", response_class=HTMLResponse)
+def signup(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
 
 
 @app.get("/logout/", response_class=HTMLResponse)
 def logout(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    redirect_url = request.url_for('index')
+    return RedirectResponse(redirect_url)
 
 
 # Websocket endpoint QUOTE and CREATE IMAGE
