@@ -11,7 +11,6 @@ from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
-import my_database
 import crud
 import helpers
 import models
@@ -28,6 +27,8 @@ app = FastAPI(title='FastAPI DalLE')
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
+
+import my_database
 
 
 # Dependency
