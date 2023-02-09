@@ -11,11 +11,7 @@ from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
-import crud
-import helpers
 import models
-
-models.Base.metadata.create_all(bind=my_database.engine)
 
 # Fetch quote of the day from here
 quote_url = 'https://zenquotes.io/api/quotes'
@@ -29,6 +25,10 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 import my_database
+models.Base.metadata.create_all(bind=my_database.engine)
+
+import crud
+import helpers
 
 
 # Dependency
