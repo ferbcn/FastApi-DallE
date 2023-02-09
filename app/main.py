@@ -187,7 +187,7 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
                 db_img_count = get_db_image_count(db)
                 # check for end of image feed and then return a random image from the db
                 if int(current_image_offset) >= db_img_count:
-                    current_image_offset = random.randint(db_img_count)
+                    current_image_offset = random.randint(0, db_img_count)
                 images = get_images_from_db(db, skip=current_image_offset, limit=5)
                 for image in images:
                     json_object = {"title": image.title, "rendered_data":image.rendered_data, "id":image.id}
