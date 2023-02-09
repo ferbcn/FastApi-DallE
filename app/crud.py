@@ -1,6 +1,6 @@
 import base64
 from sqlalchemy.orm import Session
-from models import UserModel, FileContent
+from app.models import UserModel, FileContent
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
