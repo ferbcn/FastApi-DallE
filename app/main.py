@@ -1,15 +1,10 @@
-import os
 import json
-import requests
-import openai as openai
 import uvicorn
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
-from sqlalchemy.orm import Session
 
 from app.helpers import *
 from app.crud import *

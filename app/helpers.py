@@ -3,9 +3,7 @@ import boto3
 import openai
 from datetime import datetime
 import os
-import requests
 
-from crud import save_image_in_db
 
 linode_obj_config = {
     "aws_access_key_id": "JMUZU4LBJM1GITDW7ZII",
