@@ -91,9 +91,11 @@ def login(request: Request):
 def login_post(request: Request, db: Session = Depends(get_db), username: str = Form('username'), password: str = Form('password')):
     print("Login data received!", username, password)
     if check_user_pass(db, username, password):
+        print("User authenticated!")
         redirect_url = request.url_for('index')
         return RedirectResponse(redirect_url)
     else:
+        print("Wrong credentials!")
         return templates.TemplateResponse("login.html", {"request": request})
 
 
