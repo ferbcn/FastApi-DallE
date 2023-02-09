@@ -30,7 +30,7 @@ def get_image_by_id(db, image_id):
 
 
 def get_images_from_db(db: Session, skip: int = 0, limit: int = 10):
-    images = db.query(FileContent).order_by(-FileContent.id).limit(limit).all()
+    images = db.query(FileContent).order_by(-FileContent.id).offset(skip).limit(limit).all()
     return images
 
 

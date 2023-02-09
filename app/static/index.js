@@ -2,7 +2,6 @@
 var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
 
-var last_img_id;
 var current_image_offset = 5; // Initially 10 images are loaded onto the html tamplate
 var waiting_for_image = false;
 
@@ -20,7 +19,7 @@ var image_queue = [];
 document.addEventListener("DOMContentLoaded", function(event) {
     // Get first queue elements
     moreImages.send(current_image_offset);
-    //current_image_offset += 1;
+    current_image_offset += 5;
     waiting_for_image = true;
 });
 
@@ -34,7 +33,7 @@ window.onscroll = function() {
         // Pre: Images are loaded in the queue
         // load new images into queue
         moreImages.send(current_image_offset);
-        //current_image_offset += 1;
+        current_image_offset += 5;
         waiting_for_image = true;
 
         // if queue is emtpy load waiting pinner
@@ -76,6 +75,11 @@ moreImages.onmessage = function(event) {
 
     // add image element to container
     var generatedImage = document.getElementById("image_child");
+    // if list is too long remove top item
+    if (generatedImage.childNodes.length > 40){
+        var first = generatedImage.firstElementChild;
+        generatedImage.removeChild(first);
+    }
     generatedImage.appendChild(new_image);
     console.log("Image with ID " + img_id + " added to DOM")
 
