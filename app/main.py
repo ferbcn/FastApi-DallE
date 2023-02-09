@@ -1,5 +1,6 @@
 import json
 import uvicorn
+import requests
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
 from fastapi.responses import HTMLResponse
