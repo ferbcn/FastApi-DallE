@@ -11,6 +11,11 @@ from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
+import helpers
+import crud
+import models
+import my_database
+
 # Create application
 app = FastAPI(title='FastAPI DalLE')
 
@@ -22,10 +27,6 @@ openai.api_key = os.environ.get("OPENAI_KEY")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-import helpers
-import crud
-import models
-import my_database
 models.Base.metadata.create_all(bind=my_database.engine)
 
 
