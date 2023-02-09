@@ -17,7 +17,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
 
 
 def create_user_in_db(db: Session, username, password):
-    hashed_password = generate_password_hash(password, method='plain')
+    hashed_password = generate_password_hash(password)
     db_user = UserModel(username=username, password_hash=hashed_password)
     db.add(db_user)
     db.commit()
@@ -62,7 +62,7 @@ def check_user_pass(db, username, password):
         return False
     print(user.password_hash)
     print(generate_password_hash(password))
-    if user.password_hash == generate_password_hash(password, method='plain'):
+    if check_password_hash(user.password_hash):
         return True
     else:
         return False
