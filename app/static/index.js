@@ -76,10 +76,12 @@ moreImages.onmessage = function(event) {
     // add image element to container
     var generatedImage = document.getElementById("image_child");
     // if list is too long remove top item
+    /*
     if (generatedImage.childNodes.length > 40){
         var first = generatedImage.firstElementChild;
         generatedImage.removeChild(first);
     }
+    */
     generatedImage.appendChild(new_image);
     console.log("Image with ID " + img_id + " added to DOM")
 
