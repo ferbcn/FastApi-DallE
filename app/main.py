@@ -9,14 +9,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from my_database import SessionLocal, engine
 from sqlalchemy.orm import Session
 
+import my_database
 import crud
 import helpers
 import models
 
-models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=my_database.engine)
 
 # Fetch quote of the day from here
 quote_url = 'https://zenquotes.io/api/quotes'
@@ -32,7 +32,7 @@ templates = Jinja2Templates(directory="app/templates")
 
 # Dependency
 def get_db():
-    db = SessionLocal()
+    db = my_database.SessionLocal()
     try:
         yield db
     finally:
@@ -191,7 +191,7 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
 
 if __name__ == '__main__':
     # run SSL server
-    """
+
     uvicorn.run(
         'main:app', port=443, host='192.168.1.111',
         ssl_keyfile='cert/key.pem',
@@ -202,3 +202,4 @@ if __name__ == '__main__':
         'main:app', port=8000, host='192.168.1.111',
         reload=True,
     )
+    """
