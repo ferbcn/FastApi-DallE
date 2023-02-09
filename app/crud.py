@@ -60,9 +60,7 @@ def check_user_pass(db, username, password):
     user = db.query(UserModel).filter(UserModel.username == username).first()
     if user is None:
         return False
-    print(user.password_hash)
-    print(generate_password_hash(password))
-    if check_password_hash(user.password_hash):
+    if check_password_hash(user.password_hash, password):
         return True
     else:
         return False
