@@ -1,5 +1,5 @@
 //var moreImages = new WebSocket("ws://192.168.1.111:8000/moreImages");
-var moreImages = new WebSocket("wss://art-intel.site/moreImages");
+var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
 
 var last_img_id;
