@@ -11,19 +11,18 @@ from fastapi.templating import Jinja2Templates
 
 from sqlalchemy.orm import Session
 
-import models
+# Create application
+app = FastAPI(title='FastAPI DalLE')
 
 # Fetch quote of the day from here
 quote_url = 'https://zenquotes.io/api/quotes'
 
 openai.api_key = os.environ.get("OPENAI_KEY")
 
-# Create application
-app = FastAPI(title='FastAPI DalLE')
-
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
+import models
 import my_database
 models.Base.metadata.create_all(bind=my_database.engine)
 
