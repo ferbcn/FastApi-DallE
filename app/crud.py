@@ -66,11 +66,13 @@ def check_user_pass(db, username, password):
         return False
 
 
-def delete_image_by_id(db, image_id):
-    db.query(FileContent).filter(FileContent.id == image_id).first().delete()
-    #FileContent.query.filter_by(id=img_id).delete()
-    db.session.commit()
-
+def delete_db_image_by_id(db, image_id: int):
+    image = db.query(FileContent).filter(FileContent.id == image_id).first()
+    if image:
+        db.delete(image)
+        db.commit()
+        return True
+    return False
 
 
 ### HELPER's HELPER ###

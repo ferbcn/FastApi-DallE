@@ -2,14 +2,18 @@ import random
 
 import uvicorn
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
+from app.helpers import *
+from app.crud import *
+from app.database import engine, SessionLocal, Base
+
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect,Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.helpers import *
-from app.crud import *
-from app.database import engine, SessionLocal, Base
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_login.exceptions import InvalidCredentialsException
 
 # Create application
 app = FastAPI(title='FastAPI DalLE')
@@ -21,6 +25,11 @@ templates = Jinja2Templates(directory="app/templates")
 
 Base.metadata.create_all(bind=engine)
 
+from fastapi_login import LoginManager
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+manager = LoginManager(SECRET_KEY, token_url='/auth/token')
 
 # Dependency
 def get_db():
@@ -43,6 +52,24 @@ def create_user(username, password, db: Session = Depends(get_db)):
     #if db_user:
     #    raise HTTPException(status_code=400, detail="Email already registered")
     return create_user_in_db(db, username, password)
+
+
+# the python-multipart package is required to use the OAuth2PasswordRequestForm
+@app.post('/auth/token')
+def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    username = data.username
+    password = data.password
+
+    user = get_user_by_username(db, username=username)  # we are using the same function to retrieve the user
+    if not user:
+        raise InvalidCredentialsException  # you can also use your own HTTPException
+    elif password != user['password']:
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=username)
+    )
+    return {'access_token': access_token, 'token_type': 'bearer'}
 
 
 @app.get("/", response_class=HTMLResponse)
