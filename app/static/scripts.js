@@ -2,6 +2,21 @@
 var text2image = new WebSocket("wss://art-intel.site:443/text2image");
 
 
+function handleClick(event) {
+    event.preventDefault();
+    document.getElementById('spinner').style.visibility = 'visible';
+
+    var msg = {
+        type: "message",
+        text: document.getElementById("input_text").innerHTML,
+        title: document.getElementById("title_author").innerHTML,
+    };
+
+    // Send the msg object as a JSON-formatted string.
+    text2image.send(JSON.stringify(msg));
+    //text2image.send(text);
+}
+
 function handleDelete(image_id){
     const image = document.getElementById(image_id);
     const list = document.getElementById("generatedImage");

@@ -66,7 +66,14 @@ def check_user_pass(db, username, password):
         return False
 
 
-### HELPER ###
+def delete_image_by_id(db, image_id):
+    db.query(FileContent).filter(FileContent.id == image_id).first().delete()
+    #FileContent.query.filter_by(id=img_id).delete()
+    db.session.commit()
+
+
+
+### HELPER's HELPER ###
 # needed to save the image in base64 in DB: this should be don in an object storage like S3
 def render_picture(data):
     render_pic = base64.b64encode(data).decode('ascii')

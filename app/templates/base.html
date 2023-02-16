@@ -16,6 +16,7 @@
 </head>
 
 <body>
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="{{ url_for('index') }}">Images</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,9 +54,10 @@
             </ul>
             {% endif %}
         </div>
-      </nav>
+    </nav>
 
-    {% block content %} {% endblock %}
+    {% block content %}
+    {% endblock %}
 
     <div class="text-center">
         <div class="spinner-border text-light" id="spinner" role="status">

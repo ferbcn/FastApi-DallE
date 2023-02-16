@@ -3,7 +3,6 @@
 {% block content %}
 
 <script src="{{ url_for('static', path='scripts.js') }}"></script>
-<script src="{{ url_for('static', path='create.js') }}"></script>
 
 <div class="container">
   <div id="parent">
@@ -12,7 +11,7 @@
         <form action="" onSubmit="handleClick(event)">
             Title
             <br>
-            <input class="form-control" id="title" type="text" name="title" placeholder="Image title">
+            <input class="form-control" id="title_author" type="text" name="title_author" placeholder="Image title">
             <br>
             AI instructions
             <br>

@@ -3,7 +3,7 @@
 {% block content %}
 
 <script src="{{ url_for('static', path='scripts.js') }}"></script>
-<script src="{{ url_for('static', path='quote.js') }}"></script>
+
 
 <div class="container">
   <div id="parent">
@@ -21,7 +21,7 @@
         <i><h3 id="input_text">{{ quote.quote }}</h3></i>
 
         <br>
-        <h5 id="author">{{ quote.author }}</h5>
+        <h5 id="title_author">{{ quote.author }}</h5>
 
         <br>
         <form action="" onSubmit="handleClick(event)">

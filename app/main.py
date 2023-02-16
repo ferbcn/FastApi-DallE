@@ -1,8 +1,6 @@
-import json
 import random
 
 import uvicorn
-import requests
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -11,14 +9,10 @@ from fastapi.templating import Jinja2Templates
 
 from app.helpers import *
 from app.crud import *
-from app.models import *
-from app.my_database import engine, SessionLocal, Base
+from app.database import engine, SessionLocal, Base
 
 # Create application
 app = FastAPI(title='FastAPI DalLE')
-
-# Fetch quote of the day from here
-quote_url = 'https://zenquotes.io/api/quotes'
 
 openai.api_key = os.environ.get("OPENAI_KEY")
 
@@ -61,20 +55,8 @@ def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends
 @app.get("/quote/", response_class=HTMLResponse)
 def quote(request: Request):
     # GET Request
-    try:
-        # Retrieve quote from API
-        response = requests.get(quote_url)
-        data_str = response.text
-        data = json.loads(data_str)[0]
-        quote = data.get("q")
-        author = data.get("a")
-        quote_author = {'quote': quote, 'author': author}
-
-    except Exception as e:
-        print(e)
-        quote_author = None
-
-    return templates.TemplateResponse("quote.html", {"request": request, "quote":quote_author})
+    quote_author = retrieve_quote()
+    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author})
 
 
 @app.get("/create/", response_class=HTMLResponse)
@@ -114,8 +96,15 @@ def signup(request: Request):
 
 @app.get("/logout/", response_class=HTMLResponse)
 def logout(request: Request):
-    redirect_url = request.url_for('index')
-    return RedirectResponse(redirect_url)
+    return RedirectResponse(request.url_for('index'))
+
+
+@app.get("/delete/", response_class=HTMLResponse)
+def delete_image_by_id(request: Request, db: Session = Depends(get_db)):
+    params = request.query_params.get("iid")
+    print(params)
+    delete_image_by_id(db, int(params))
+    return RedirectResponse(request.url_for('index'))
 
 
 # Websocket endpoint QUOTE and CREATE IMAGE
@@ -198,7 +187,6 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
 
     except WebSocketDisconnect:
         print("Client disconnected")
-
 
 
 if __name__ == '__main__':

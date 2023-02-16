@@ -13,9 +13,6 @@ function handleDelete(image_id){
 }
 
 
-// ON start 5 images are loaded into the queue
-var image_queue = [];
-
 document.addEventListener("DOMContentLoaded", function(event) {
     // Get first queue elements
     moreImages.send(current_image_offset);
