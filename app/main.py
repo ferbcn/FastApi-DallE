@@ -1,15 +1,20 @@
 import random
+from datetime import datetime, timedelta
 
 import uvicorn
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Depends, Form, HTTPException, status
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
+from jose import JWTError, jwt
 
 from app.helpers import *
 from app.crud import *
 from app.database import engine, SessionLocal, Base
+from app.models import *
 
 # Create application
 app = FastAPI(title='FastAPI DalLE')
@@ -20,6 +25,14 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 Base.metadata.create_all(bind=engine)
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# to get a string like this run:
+# openssl rand -hex 32
+SECRET_KEY = os.environ.get("SECRET_KEY")
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 # Dependency
@@ -69,8 +82,77 @@ def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
+def get_user(username: str, db: Session = Depends(get_db)):
+    user = get_user_by_username(db, username)
+    return user
+
+
+class Token:
+    access_token: str
+    token_type: str
+
+
+class TokenData:
+    username: str
+
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = get_user(username=token_data.username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+
+def create_access_token(data: dict, expires_delta=None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=15)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+@app.post("/token")
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+
+    user = get_user_by_username(db, form_data.username)
+
+    if not user or not check_user_pass(db, form_data.username, form_data.password):
+        raise HTTPException(status_code=400, detail="Incorrect username or password")
+
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/users/me")
+#async def read_users_me(current_user: UserModel = Depends(get_current_user)):
+async def read_users_me():
+    current_user = get_current_user()
+    return current_user
+
+"""
 @app.post("/login/", response_class=HTMLResponse)
-def login_post(request: Request, db: Session = Depends(get_db), username: str = Form('username'), password: str = Form('password')):
+def login_post(request: Request, db: Session = Depends(get_db), username: str = Form('username'),
+               password: str = Form('password')):
+
     print("Login data received!", username, password)
     if check_user_pass(db, username, password):
         print("User authenticated!")
@@ -79,14 +161,14 @@ def login_post(request: Request, db: Session = Depends(get_db), username: str = 
     else:
         print("Wrong credentials!")
         return templates.TemplateResponse("login.html", {"request": request})
-
+"""
 
 @app.get("/about/", response_class=HTMLResponse)
 def about(request: Request, db: Session = Depends(get_db)):
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
-    return templates.TemplateResponse("about.html", {"request": request, "total_images":total_images, "num_images":num_images})
+    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images})
 
 
 @app.get("/signup/", response_class=HTMLResponse)
@@ -99,12 +181,9 @@ def logout(request: Request):
     return RedirectResponse(request.url_for('index'))
 
 
-@app.get("/delete/", response_class=HTMLResponse)
-def delete_image_by_id(request: Request, db: Session = Depends(get_db)):
-    params = request.query_params.get("iid")
-    print(params)
-    delete_image_by_id(db, int(params))
-    return RedirectResponse(request.url_for('index'))
+@app.post("/delete/", response_class=HTMLResponse)
+def delete_image_by_id(image_id, db: Session = Depends(get_db)):
+    delete_db_image_by_id(db, image_id)
 
 
 # Websocket endpoint QUOTE and CREATE IMAGE
