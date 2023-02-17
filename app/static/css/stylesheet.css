@@ -93,13 +93,13 @@ a:hover {
 /* Style the submit button */
 input[type=submit]{
   margin-top: 0vh;
-  background-color: var(--main_color);
+  background-color: Transparent;
   padding: 12px 20px;
-  color: white;
+  color: var(--main_color);
   font-weight: bold;
-  border: none;
-  border-radius: 4px;
   cursor: pointer;
+  border-color: var(--main_color);
+  border-radius: 5px;
   float: left;
 }
 
