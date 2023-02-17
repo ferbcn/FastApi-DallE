@@ -9,7 +9,7 @@ from app.crud import *
 from app.database import engine, SessionLocal, Base
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Form
-from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -31,7 +31,7 @@ from fastapi_login import LoginManager
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-manager = LoginManager(SECRET_KEY, token_url='/login')
+manager = LoginManager(SECRET_KEY, token_url='/login', use_cookie=True)
 
 favicon_path = 'app/images/favicon.ico'
 
@@ -66,15 +66,15 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
 
 @app.post("/users/")
 def create_user(username, password, db: Session = Depends(get_db), user=Depends(manager)):
-    user = get_user_by_username(db, username=username)
-    if user:
+    newuser = get_user_by_username(db, username=username)
+    if newuser:
         raise HTTPException(status_code=400, detail="Email already registered")
     return create_user_in_db(db, username, password)
 
 
 # the python-multipart package is required to use the OAuth2PasswordRequestForm
 @app.post('/login')
-def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     username = data.username
     password = data.password
 
@@ -84,11 +84,11 @@ def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get
     access_token = manager.create_access_token(
         data=dict(sub=username)
     )
-    return {'access_token': access_token, 'token_type': 'bearer'}
+    manager.set_cookie(response, access_token)
+    return {'access_token': access_token, 'token_type': 'bearer', }
 
 
 @app.get("/", response_class=HTMLResponse)
-@app.post("/", response_class=HTMLResponse)     # needed for redirect from login
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
@@ -102,7 +102,7 @@ def quote(request: Request):
 
 
 @app.post("/quote/", response_class=HTMLResponse)
-def quote(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db)):
+def quote(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db), user=Depends(manager)):
     img_url, img_id = image_workflow(title, content, db)
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
     quote_author = {"quote": content, "author": title}
@@ -115,11 +115,17 @@ def create(request: Request):
 
 
 @app.post("/create/", response_class=HTMLResponse)
-def create(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db)):
+def create(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db), user=Depends(manager)):
     img_url, img_id = image_workflow(title, content, db)
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
     return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object})
 
+
+@app.get("/logout/", response_class=HTMLResponse)
+def login(response: Response, request: Request):
+    # manager.set_cookie(response, None)
+    # clear cookie in some way
+    return RedirectResponse("/")
 
 """
 @app.get("/login/", response_class=HTMLResponse)
@@ -129,7 +135,7 @@ def login(request: Request):
 
 
 @app.get("/about/", response_class=HTMLResponse)
-def about(request: Request, db: Session = Depends(get_db)):
+def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)):
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
