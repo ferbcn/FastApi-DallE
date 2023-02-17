@@ -58,7 +58,7 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
 
 
 @app.post("/users/")
-def create_user(username, password, db: Session = Depends(get_db)):
+def create_user(username, password, db: Session = Depends(get_db), user=Depends(manager)):
     user = get_user_by_username(db, username=username)
     if user:
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -116,12 +116,6 @@ def about(request: Request, db: Session = Depends(get_db)):
 @app.get("/signup/", response_class=HTMLResponse)
 def signup(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
-
-
-@app.get("/logout/", response_class=HTMLResponse)
-def logout(request: Request, user=Depends(manager)):
-    print(user)
-    return RedirectResponse(request.url_for('index'))
 
 
 @app.post("/delete/")
