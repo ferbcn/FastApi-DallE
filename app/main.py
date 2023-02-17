@@ -149,62 +149,6 @@ def delete_image_by_id(image_id, request: Request, db: Session = Depends(get_db)
     return {'user': user}
 
 
-# Websocket endpoint QUOTE and CREATE IMAGE
-@app.websocket("/text2image")
-async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)):
-    await websocket.accept()
-
-    try:
-        # await for messages and send messages
-        while True:
-            msg = await websocket.receive_text()
-            if msg.lower() == "close":
-                await websocket.close()
-                break
-            else:
-                print(f'CLIENT says - {msg}')
-                # convert string to  object
-                msg_json_object = json.loads(msg)
-                text = msg_json_object.get("text")
-                title = msg_json_object.get("title")
-                print(msg)
-                try:
-                    img_url = get_dalle_image_url(text)
-                    #img_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-OSSLxbVdVYcONWAYgACXE7BX/user-xe35vqrSPvSsPUEOnVK0Uwov/img-tpCOtVol5LsixwSZRrKvqnYN.png?st=2023-02-08T12%3A23%3A28Z&se=2023-02-08T14%3A23%3A28Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-07T21%3A30%3A10Z&ske=2023-02-08T21%3A30%3A10Z&sks=b&skv=2021-08-06&sig=QECDlgMyB6ThTSbTynoDk/uOe2z9866IHV6NlPrWWts%3D"
-                    print(img_url)
-                except Exception as e:
-                    print(f'Could not get image url for {text}')
-                    print(e)
-
-                filename = make_filename(text)
-                try:
-                    response = requests.get(img_url, stream=True)
-                    data = response.content
-                except Exception as e:
-                    print(f'Could not retrieve image from url: {img_url}')
-                    print(e)
-                try:
-                    create_s3_upload_thread(filename, data)
-                except Exception as e:
-                    print('Could not save image to S3')
-                    print(e)
-                # add file to db
-                try:
-                    save_image_in_db(db=db, title=text, filename=filename, data=data, url=img_url)
-                    img_id = get_last_image_id(db)
-                except Exception as e:
-                    print('Could not save image to DB')
-                    print(e)
-
-                json_object = {"img_url": img_url, "img_id": img_id}
-                #await websocket.send_text(img_url)
-                await websocket.send_json(json_object)
-
-    except WebSocketDisconnect:
-        print("Client disconnected")
-
-
-
 # Websocket endpoint MORE IMAGES FOR FEED
 @app.websocket("/moreImages")
 async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_db)):

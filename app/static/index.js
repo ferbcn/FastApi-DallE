@@ -2,7 +2,7 @@
 var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
 
-var current_image_offset = 5; // Initially 10 images are loaded onto the html tamplate
+var current_image_offset = 5;
 var waiting_for_image = false;
 
 
