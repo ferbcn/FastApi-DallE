@@ -9,7 +9,7 @@ from app.crud import *
 from app.database import engine, SessionLocal, Base
 
 from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -33,6 +33,8 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 manager = LoginManager(SECRET_KEY, token_url='/login')
 
+favicon_path = 'app/images/favicon.ico'
+
 
 # Dependency
 def get_db():
@@ -48,6 +50,11 @@ def load_user(username: str):  # could also be an asynchronous function
     db = SessionLocal()     # No dependenca injection on non route functions, is this a hack?
     user = get_user_by_username(db, username=username)
     return user
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(favicon_path)
 
 
 @app.get("/users/")
@@ -94,9 +101,25 @@ def quote(request: Request):
     return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author})
 
 
+@app.post("/quote/", response_class=HTMLResponse)
+def quote(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db)):
+    img_url, img_id = image_workflow(title, content, db)
+    json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
+    quote_author = {"quote": content, "author": title}
+    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "img_object": json_object})
+
+
 @app.get("/create/", response_class=HTMLResponse)
 def create(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
+
+
+@app.post("/create/", response_class=HTMLResponse)
+def create(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db)):
+    img_url, img_id = image_workflow(title, content, db)
+    json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
+    return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object})
+
 
 """
 @app.get("/login/", response_class=HTMLResponse)

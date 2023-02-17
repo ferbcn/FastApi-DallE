@@ -24,7 +24,9 @@
         <h5 id="title_author">{{ quote.author }}</h5>
 
         <br>
-        <form action="" onSubmit="handleClick(event)">
+        <form method="post" onSubmit="handleSpinner(event)">
+            <input type="hidden" id="title" name="title" value="{{ quote.quote }}">
+            <input type="hidden" id="content" name="content" value="{{ quote.author }}">
             <input type="submit" value="Generate Image">
         </form>
 
@@ -32,7 +34,15 @@
         <br>
         <div class="image_view">
             <div class='image_field'>
-                <div id="generatedImage"></div>
+                {% if img_object %}
+                    <div id="{{ img_object.img_id }}">
+                        <center>
+                            <h3>{{ img_object.img_title }}</h3>
+                            <img src="{{ img_object.img_url }}">
+                            <h4>{{ img_object.img_text }}</h4>
+                        </center>
+                    </div>
+                {% endif %}
             </div>
         </div>
 

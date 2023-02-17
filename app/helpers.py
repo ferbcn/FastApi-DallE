@@ -7,6 +7,8 @@ import os
 
 import requests
 
+from app.crud import save_image_in_db, get_last_image_id
+
 # Fetch quote of the day from here
 quote_url = 'https://zenquotes.io/api/quotes'
 
@@ -67,3 +69,39 @@ def retrieve_quote():
         quote_author = None
 
     return quote_author
+
+
+# generate image from content
+# save image in db
+# save backup on s3 storage
+def image_workflow(title, content, db):
+    print(title, content)
+    try:
+        img_url = get_dalle_image_url(content)
+        # img_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-OSSLxbVdVYcONWAYgACXE7BX/user-xe35vqrSPvSsPUEOnVK0Uwov/img-tpCOtVol5LsixwSZRrKvqnYN.png?st=2023-02-08T12%3A23%3A28Z&se=2023-02-08T14%3A23%3A28Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-07T21%3A30%3A10Z&ske=2023-02-08T21%3A30%3A10Z&sks=b&skv=2021-08-06&sig=QECDlgMyB6ThTSbTynoDk/uOe2z9866IHV6NlPrWWts%3D"
+        print(img_url)
+    except Exception as e:
+        print(f'Could not get image url for {content}')
+        print(e)
+
+    filename = make_filename(content)
+    try:
+        response = requests.get(img_url, stream=True)
+        data = response.content
+    except Exception as e:
+        print(f'Could not retrieve image from url: {img_url}')
+        print(e)
+    try:
+        create_s3_upload_thread(filename, data)
+    except Exception as e:
+        print('Could not save image to S3')
+        print(e)
+    # add file to db
+    try:
+        save_image_in_db(db=db, title=content, filename=filename, data=data, url=img_url)
+        img_id = get_last_image_id(db)
+    except Exception as e:
+        print('Could not save image to DB')
+        print(e)
+
+    return img_url, img_id
