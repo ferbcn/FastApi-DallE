@@ -49,10 +49,13 @@ def get_db_image_count(db):
     return num_images
 
 
+def get_last_image_id(db):
+    return db.query(FileContent).order_by(-FileContent.id).first().id
+
+
 def get_db_stats(db):
     num_images = get_db_image_count(db)
-    last_image = db.query(FileContent).order_by(-FileContent.id).first()
-    total_images = last_image.id
+    total_images = get_last_image_id(db)
     return total_images, num_images
 
 

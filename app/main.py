@@ -1,12 +1,14 @@
 import random
 
 import uvicorn
+from starlette.exceptions import HTTPException
+from starlette.responses import Response
 
 from app.helpers import *
 from app.crud import *
 from app.database import engine, SessionLocal, Base
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect,Form
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -29,7 +31,8 @@ from fastapi_login import LoginManager
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-manager = LoginManager(SECRET_KEY, token_url='/auth/token')
+manager = LoginManager(SECRET_KEY, token_url='/login')
+
 
 # Dependency
 def get_db():
@@ -40,30 +43,35 @@ def get_db():
         db.close()
 
 
+@manager.user_loader()
+def load_user(username: str):  # could also be an asynchronous function
+    db = SessionLocal()     # No dependenca injection on non route functions, is this a hack?
+    user = get_user_by_username(db, username=username)
+    return user
+
+
 @app.get("/users/")
-def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), user=Depends(manager)):
+    print(user)
     users = get_users(db, skip=skip, limit=limit)
     return users
 
 
 @app.post("/users/")
 def create_user(username, password, db: Session = Depends(get_db)):
-    #db_user = get_user_by_username(db, username=username)
-    #if db_user:
-    #    raise HTTPException(status_code=400, detail="Email already registered")
+    user = get_user_by_username(db, username=username)
+    if user:
+        raise HTTPException(status_code=400, detail="Email already registered")
     return create_user_in_db(db, username, password)
 
 
 # the python-multipart package is required to use the OAuth2PasswordRequestForm
-@app.post('/auth/token')
+@app.post('/login')
 def login(data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     username = data.username
     password = data.password
 
-    user = get_user_by_username(db, username=username)  # we are using the same function to retrieve the user
-    if not user:
-        raise InvalidCredentialsException  # you can also use your own HTTPException
-    elif password != user['password']:
+    if not check_user_pass(db, username, password):
         raise InvalidCredentialsException
 
     access_token = manager.create_access_token(
@@ -90,22 +98,11 @@ def quote(request: Request):
 def create(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
 
-
+"""
 @app.get("/login/", response_class=HTMLResponse)
 def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
-
-
-@app.post("/login/", response_class=HTMLResponse)
-def login_post(request: Request, db: Session = Depends(get_db), username: str = Form('username'), password: str = Form('password')):
-    print("Login data received!", username, password)
-    if check_user_pass(db, username, password):
-        print("User authenticated!")
-        redirect_url = request.url_for('index')
-        return RedirectResponse(redirect_url)
-    else:
-        print("Wrong credentials!")
-        return templates.TemplateResponse("login.html", {"request": request})
+"""
 
 
 @app.get("/about/", response_class=HTMLResponse)
@@ -113,7 +110,7 @@ def about(request: Request, db: Session = Depends(get_db)):
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
-    return templates.TemplateResponse("about.html", {"request": request, "total_images":total_images, "num_images":num_images})
+    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images})
 
 
 @app.get("/signup/", response_class=HTMLResponse)
@@ -122,16 +119,17 @@ def signup(request: Request):
 
 
 @app.get("/logout/", response_class=HTMLResponse)
-def logout(request: Request):
+def logout(request: Request, user=Depends(manager)):
+    print(user)
     return RedirectResponse(request.url_for('index'))
 
 
-@app.get("/delete/", response_class=HTMLResponse)
-def delete_image_by_id(request: Request, db: Session = Depends(get_db)):
-    params = request.query_params.get("iid")
-    print(params)
-    delete_image_by_id(db, int(params))
-    return RedirectResponse(request.url_for('index'))
+@app.post("/delete/")
+def delete_image_by_id(image_id, request: Request, db: Session = Depends(get_db), user=Depends(manager)):
+    print(user)
+    print(image_id)
+    delete_db_image_by_id(db, image_id)
+    return {'user': user}
 
 
 # Websocket endpoint QUOTE and CREATE IMAGE
@@ -152,6 +150,7 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                 msg_json_object = json.loads(msg)
                 text = msg_json_object.get("text")
                 title = msg_json_object.get("title")
+                print(msg)
                 try:
                     img_url = get_dalle_image_url(text)
                     #img_url = "https://oaidalleapiprodscus.blob.core.windows.net/private/org-OSSLxbVdVYcONWAYgACXE7BX/user-xe35vqrSPvSsPUEOnVK0Uwov/img-tpCOtVol5LsixwSZRrKvqnYN.png?st=2023-02-08T12%3A23%3A28Z&se=2023-02-08T14%3A23%3A28Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-02-07T21%3A30%3A10Z&ske=2023-02-08T21%3A30%3A10Z&sks=b&skv=2021-08-06&sig=QECDlgMyB6ThTSbTynoDk/uOe2z9866IHV6NlPrWWts%3D"
@@ -175,13 +174,14 @@ async def websocket_endpoint(websocket: WebSocket, db: Session = Depends(get_db)
                 # add file to db
                 try:
                     save_image_in_db(db=db, title=text, filename=filename, data=data, url=img_url)
+                    img_id = get_last_image_id(db)
                 except Exception as e:
                     print('Could not save image to DB')
                     print(e)
 
-                # dict = {"img_url": img_url}
-                # json_object = json.dumps(dict)
-                await websocket.send_text(img_url)
+                json_object = {"img_url": img_url, "img_id": img_id}
+                #await websocket.send_text(img_url)
+                await websocket.send_json(json_object)
 
     except WebSocketDisconnect:
         print("Client disconnected")
@@ -208,7 +208,7 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
                     current_image_offset = random.randint(0, db_img_count)
                 images = get_images_from_db(db, skip=current_image_offset, limit=5)
                 for image in images:
-                    json_object = {"title": image.title, "rendered_data":image.rendered_data, "id":image.id}
+                    json_object = {"title": image.title, "rendered_data": image.rendered_data, "id": image.id}
                     # print(f'Sending {image} to client websocket.')
                     await websocket.send_json(json_object)
 

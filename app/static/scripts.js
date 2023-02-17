@@ -6,13 +6,24 @@ function handleClick(event) {
     event.preventDefault();
     document.getElementById('spinner').style.visibility = 'visible';
 
-    var msg = {
-        type: "message",
-        text: document.getElementById("input_text").innerHTML,
-        title: document.getElementById("title_author").innerHTML,
-    };
+    if (window.location.pathname == '/create/'){
+        var msg = {
+            type: "message",
+            text: document.getElementById("input_text").value,
+            title: document.getElementById("title_author").value,
+        };
+    }
+    else{
+        var msg = {
+            type: "message",
+            text: document.getElementById("input_text").innerHTML,
+            title: document.getElementById("title_author").innerHTML,
+        };
+    }
 
     // Send the msg object as a JSON-formatted string.
+    console.log(msg);
+
     text2image.send(JSON.stringify(msg));
     //text2image.send(text);
 }
@@ -29,11 +40,12 @@ text2image.onmessage = function(event) {
 
     document.getElementById('spinner').style.visibility = 'hidden';
     //console.log(event)
-    //json_string = event.data;
-    //json_data = JSON.parse(json_string);
-    //console.log(json_data);
+    json_string = event.data;
+    json_data = JSON.parse(json_string);
+    console.log(json_data);
 
-    var img_url = event.data;
+    //var img_url = event.data;
+    var img_url = json_data.img_url;
     console.log("URL: " + img_url);
 
     // add image element to container
