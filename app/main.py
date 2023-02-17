@@ -8,7 +8,7 @@ from app.helpers import *
 from app.crud import *
 from app.database import engine, SessionLocal, Base
 
-from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Form
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, Form, status
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -33,7 +33,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 manager = LoginManager(SECRET_KEY, token_url='/login', use_cookie=True)
 
-favicon_path = 'app/images/favicon.ico'
+favicon_path = 'app/static/images/favicon.ico'
 
 
 # Dependency
@@ -72,6 +72,11 @@ def create_user(username, password, db: Session = Depends(get_db), user=Depends(
     return create_user_in_db(db, username, password)
 
 
+@app.get("/login/", response_class=HTMLResponse)
+def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+
 # the python-multipart package is required to use the OAuth2PasswordRequestForm
 @app.post('/login')
 def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -85,10 +90,26 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
         data=dict(sub=username)
     )
     manager.set_cookie(response, access_token)
-    return {'access_token': access_token, 'token_type': 'bearer', }
+    # return {'access_token': access_token, 'token_type': 'bearer', }
+    # resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    # manager.set_cookie(resp, access_token)
+    # return resp
+    return JSONResponse({"status": "success"})
+
+
+@app.get("/logout/", response_class=HTMLResponse)
+def logout(response: Response):
+    # manager.set_cookie(response, None)
+    # response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    # clear cookie in some way
+    response.delete_cookie("access_token")
+    # This does not logout
+    # return response
+    return JSONResponse({"status": "success"})
 
 
 @app.get("/", response_class=HTMLResponse)
+# @app.post("/", response_class=HTMLResponse)     # Needed for redirect from post methods
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
@@ -119,19 +140,6 @@ def create(request: Request, title: str = Form(), content: str = Form(), db: Ses
     img_url, img_id = image_workflow(title, content, db)
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
     return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object})
-
-
-@app.get("/logout/", response_class=HTMLResponse)
-def login(response: Response, request: Request):
-    # manager.set_cookie(response, None)
-    # clear cookie in some way
-    return RedirectResponse("/")
-
-"""
-@app.get("/login/", response_class=HTMLResponse)
-def login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
-"""
 
 
 @app.get("/about/", response_class=HTMLResponse)

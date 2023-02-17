@@ -8,9 +8,9 @@
         <h2>Login</h2>
         <br>
         <br>
-        <form action="{{ url_for('login') }}" method="post">
-            Username:<input class="form-control" name="username" type="text" placeholder="username">
-            Password:<input class="form-control" name="password" type="password" placeholder="password">
+        <form method="POST" action="/login">
+            Username:<input class="form-control" name="username" type="text" placeholder="username" required>
+            Password:<input class="form-control" name="password" type="password" placeholder="password" required>
             <br>
             <input type="submit" value="Submit">
             <br>
