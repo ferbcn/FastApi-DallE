@@ -1,5 +1,5 @@
 :root {
-  --main_color: #d64161;
+  --main_color: #ff0000;
   --white: #ffffff;
 }
 
@@ -94,7 +94,8 @@ a:hover {
 input[type=submit]{
   margin-top: 0vh;
   background-color: var(--main_color);
-  color: white;
+  color: black;
+  font-weight: bold;
   padding: 12px 20px;
   border: none;
   border-radius: 4px;

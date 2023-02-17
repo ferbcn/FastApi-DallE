@@ -1,10 +1,17 @@
 //var text2image = new WebSocket("ws://192.168.1.111:8000/text2image");
-var text2image = new WebSocket("wss://art-intel.site:443/text2image");
+//var text2image = new WebSocket("wss://art-intel.site:443/text2image");
 
 function handleSpinner(event) {
     document.getElementById('spinner').style.visibility = 'visible';
     }
 
+function handleDelete(image_id){
+    const image = document.getElementById(image_id);
+    const list = document.getElementById("generatedImage");
+    list.removeChild(image);
+}
+
+/*
 function handleClick(event) {
     event.preventDefault();
     document.getElementById('spinner').style.visibility = 'visible';
@@ -30,13 +37,10 @@ function handleClick(event) {
     text2image.send(JSON.stringify(msg));
     //text2image.send(text);
 }
+*/
 
-function handleDelete(image_id){
-    const image = document.getElementById(image_id);
-    const list = document.getElementById("generatedImage");
-    list.removeChild(image);
-}
 
+/*
 var img_id = 1;
 
 text2image.onmessage = function(event) {
@@ -70,8 +74,4 @@ text2image.onmessage = function(event) {
     generatedImage.appendChild(new_image);
 
 }
-
-
-//const submitBtn = document.querySelector('button[type="submit"]');
-//const form = document.querySelector('form');
-
+*/

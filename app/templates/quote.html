@@ -25,8 +25,8 @@
 
         <br>
         <form method="post" onSubmit="handleSpinner(event)">
-            <input type="hidden" id="title" name="title" value="{{ quote.quote }}">
-            <input type="hidden" id="content" name="content" value="{{ quote.author }}">
+            <input type="hidden" id="title" name="title" value="{{ quote.author }}">
+            <input type="hidden" id="content" name="content" value="{{ quote.quote }}">
             <input type="submit" value="Generate Image">
         </form>
 
