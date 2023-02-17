@@ -93,8 +93,8 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     # return {'access_token': access_token, 'token_type': 'bearer', }
     resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
-    #return resp
-    return JSONResponse({"status": "success"})
+    return resp
+    #return JSONResponse({"status": "success"})
 
 
 @app.get("/logout/", response_class=HTMLResponse)
