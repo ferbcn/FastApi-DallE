@@ -68,7 +68,7 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
 def create_user(username, password, db: Session = Depends(get_db), user=Depends(manager)):
     newuser = get_user_by_username(db, username=username)
     if newuser:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="User already registered")
     return create_user_in_db(db, username, password)
 
 
@@ -156,11 +156,11 @@ def signup(request: Request):
 
 
 @app.post("/delete/")
-def delete_image_by_id(image_id, request: Request, db: Session = Depends(get_db), user=Depends(manager)):
+def delete_image_by_id(image_id: int, request: Request, db: Session = Depends(get_db), user=Depends(manager)):
     print(user)
     print(image_id)
     delete_db_image_by_id(db, image_id)
-    return {'user': user}
+    return {'image_id': image_id}
 
 
 # Websocket endpoint MORE IMAGES FOR FEED
