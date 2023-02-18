@@ -39,6 +39,7 @@ app.add_exception_handler(NotAuthenticatedException, NotAuthenticatedException.e
 
 favicon_path = 'app/static/images/favicon.ico'
 
+TOKEN_EXP_TIME = timedelta(minutes=3)
 
 # Dependency
 def get_db():
@@ -68,6 +69,11 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
     return users
 
 
+@app.get("/images/")
+def read_users(image_id: int, db: Session = Depends(get_db)):
+    return get_image_by_id(db, image_id)
+
+
 @app.post("/users/")
 def create_user(username, password, db: Session = Depends(get_db), user=Depends(manager)):
     newuser = get_user_by_username(db, username=username)
@@ -76,13 +82,14 @@ def create_user(username, password, db: Session = Depends(get_db), user=Depends(
     return create_user_in_db(db, username, password)
 
 
-@app.get("/login/", response_class=HTMLResponse)
-def login(request: Request):
+@app.get("/loginform/", response_class=HTMLResponse)
+@app.post("/loginform/", response_class=HTMLResponse)
+def loginform(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 
 # the python-multipart package is required to use the OAuth2PasswordRequestForm
-@app.post('/login')
+@app.post('/login/')
 def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     username = data.username
     password = data.password
@@ -92,7 +99,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
 
     access_token = manager.create_access_token(
         data=dict(sub=username),
-        expires=timedelta(minutes=1)
+        expires=TOKEN_EXP_TIME
     )
     manager.set_cookie(response, access_token)
     # return {'access_token': access_token, 'token_type': 'bearer', }

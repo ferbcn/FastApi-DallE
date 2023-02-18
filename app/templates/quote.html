@@ -35,13 +35,18 @@
         <div class="image_view">
             <div class='image_field'>
                 {% if img_object %}
+                <div id="image_child">
                     <div id="{{ img_object.img_id }}">
                         <center>
                             <h3>{{ img_object.img_title }}</h3>
                             <img src="{{ img_object.img_url }}">
                             <h4>{{ img_object.img_text }}</h4>
+                            <div class="del_but">
+                                <a href="javascript:handleDelete({{img_object.img_id}})">Delete</a>
+                            </div>
                         </center>
                     </div>
+                </div>
                 {% endif %}
             </div>
         </div>
