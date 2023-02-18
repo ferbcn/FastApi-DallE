@@ -1,4 +1,5 @@
 import random
+from datetime import timedelta
 
 import uvicorn
 from starlette.exceptions import HTTPException
@@ -29,9 +30,12 @@ Base.metadata.create_all(bind=engine)
 
 from fastapi_login import LoginManager
 
+from app.custom_exceptions import NotAuthenticatedException
+
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-manager = LoginManager(SECRET_KEY, token_url='/login', use_cookie=True)
+manager = LoginManager(SECRET_KEY, token_url='/login', use_cookie=True, custom_exception=NotAuthenticatedException)
+app.add_exception_handler(NotAuthenticatedException, NotAuthenticatedException.exc_handler)
 
 favicon_path = 'app/static/images/favicon.ico'
 
@@ -87,7 +91,8 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
         raise InvalidCredentialsException
 
     access_token = manager.create_access_token(
-        data=dict(sub=username)
+        data=dict(sub=username),
+        expires=timedelta(minutes=1)
     )
     manager.set_cookie(response, access_token)
     # return {'access_token': access_token, 'token_type': 'bearer', }
@@ -98,7 +103,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
 
 
 @app.get("/logout/", response_class=HTMLResponse)
-def logout():
+def logout(request: Request, response: Response, user=Depends(manager)):
     # manager.set_cookie(response, None)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     # clear cookie in some way
