@@ -9,6 +9,7 @@
             <div class='image_field' id="{{ image['id'] }}">
                 <h3>{{ image['title'] }}</h3>
                 <img src="data:;base64,{{ image['rendered_data'] }}"/>
+                <h6>{{ image.description }}</h6>
                 <div class="del_but">
                     <a href="javascript:handleDelete({{image['id']}})">Hide</a>
                 </div>

@@ -74,7 +74,7 @@ def retrieve_quote():
 # generate image from content
 # save image in db
 # save backup on s3 storage
-def image_workflow(title, content, db):
+def image_workflow(title, content, user, db):
     print(title, content)
     try:
         img_url = get_dalle_image_url(content)
@@ -98,10 +98,11 @@ def image_workflow(title, content, db):
         print(e)
     # add file to db
     try:
-        save_image_in_db(db=db, title=content, filename=filename, data=data, url=img_url)
+        save_image_in_db(db=db, title=title, filename=filename, data=data, url=img_url, description=content, user_id=user.id)
         img_id = get_last_image_id(db)
     except Exception as e:
         print('Could not save image to DB')
         print(e)
+        img_id = None
 
     return img_url, img_id
