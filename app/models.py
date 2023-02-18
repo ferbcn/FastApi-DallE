@@ -20,6 +20,7 @@ class FileContent(Base):
     id = Column(Integer, primary_key=True)
     title = Column(Text)
     filename = Column(Text)
+    description = Column(Text)
     data = Column(LargeBinary, nullable=False)  # Actual data, needed for Download
     rendered_data = Column(Text, nullable=False)  # Data to render the pic in browser
     pic_date = Column(DateTime, nullable=False, default=datetime.utcnow)

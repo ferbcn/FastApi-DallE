@@ -34,7 +34,7 @@ from app.custom_exceptions import NotAuthenticatedException
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-manager = LoginManager(SECRET_KEY, token_url='/login', use_cookie=True, custom_exception=NotAuthenticatedException)
+manager = LoginManager(SECRET_KEY, token_url='/auth', use_cookie=True, custom_exception=NotAuthenticatedException)
 app.add_exception_handler(NotAuthenticatedException, NotAuthenticatedException.exc_handler)
 
 favicon_path = 'app/static/images/favicon.ico'
@@ -70,7 +70,7 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
 
 
 @app.get("/images/")
-def read_users(image_id: int, db: Session = Depends(get_db)):
+def read_images(image_id: int, db: Session = Depends(get_db)):
     return get_image_by_id(db, image_id)
 
 
@@ -95,7 +95,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     password = data.password
 
     if not check_user_pass(db, username, password):
-        raise InvalidCredentialsException
+        raise NotAuthenticatedException
 
     access_token = manager.create_access_token(
         data=dict(sub=username),
@@ -107,6 +107,23 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     manager.set_cookie(resp, access_token)
     return resp
     #return JSONResponse({"status": "success"})
+
+
+#
+# the python-multipart package is required to use the OAuth2PasswordRequestForm
+@app.post('/auth')
+def auth(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    username = data.username
+    password = data.password
+
+    if not check_user_pass(db, username, password):
+        raise InvalidCredentialsException
+
+    access_token = manager.create_access_token(
+        data=dict(sub=username),
+        expires=TOKEN_EXP_TIME
+    )
+    return {'access_token': access_token, 'token_type': 'bearer', }
 
 
 @app.get("/logout/", response_class=HTMLResponse)
@@ -121,7 +138,6 @@ def logout(request: Request, response: Response, user=Depends(manager)):
 
 
 @app.get("/", response_class=HTMLResponse)
-# @app.post("/", response_class=HTMLResponse)     # Needed for redirect from post methods
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
@@ -160,6 +176,14 @@ def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)
     # get images in db
     total_images, num_images = get_db_stats(db)
     return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images})
+
+
+@app.post("/signup/", response_class=HTMLResponse)
+def signup(response: Response, request: Request, username: str = Form(), password: str = Form(), user=Depends(manager)):
+    print(username, password)
+    db = SessionLocal()
+    create_user(username, password, db)
+    return templates.TemplateResponse("register.html", {"request": request})
 
 
 @app.get("/signup/", response_class=HTMLResponse)
