@@ -1,4 +1,4 @@
-//var moreImages = new WebSocket("ws://192.168.1.111:8000/moreImages");
+//var moreImages = new WebSocket("ws://127.0.0.1:8000/moreImages");
 var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
 
@@ -73,12 +73,17 @@ moreImages.onmessage = function(event) {
     // add image
     var img = document.createElement('img');
     img.src = "data:image;base64," + img_data_b64;
-    new_image.appendChild(img);
     // add delete link
     var del_text = document.createElement('a');
     del_text.href = "javascript:handleDelete(" + img_id + ")";
     del_text.appendChild(document.createTextNode("Hide"));
-    new_image.appendChild(del_text);
+    //new_image.appendChild(del_text);
+    var cross = document.createElement('a');
+    cross.classList.add('close-icon');
+    cross.href = "javascript:handleDelete(" + img_id + ")";
+
+    new_image.appendChild(cross);
+    new_image.appendChild(img);
     new_image.id = img_id
 
     // add image element to container
