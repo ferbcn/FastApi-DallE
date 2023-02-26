@@ -6,13 +6,22 @@ from sqlalchemy.orm import sessionmaker
 
 DB_NAME = os.environ.get('DB_NAME')
 DB_USER = os.environ.get('DB_USER')
-DB_PASS = os.environ.get('DB_PASSWORD')
+DB_PASSWORD = os.environ.get('DB_PASSWORD')
 DB_URL = os.environ.get('DB_URL')
+DB_PORT = '5432'
+
+
+# Self Hosted DB on Linode
+DB_NAME = 'dalle'
+DB_USER = 'postgres'
+DB_PASSWORD = 'lE9F7TRIJdh-LUqW'
+DB_URL = '139.162.170.137'
+DB_PORT = '5432'
 
 
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./data.sqlite"
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
-SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_URL}:5432/{DB_NAME}"
+SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_URL}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(
     #SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}

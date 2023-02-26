@@ -1,12 +1,13 @@
 :root {
   --main_color: #ffa500;
+  --bg_color: #252525;
   --white: #ffffff;
 }
 
 
 html, body {
     font-family: "Lucida Console", "Courier New", monospace;
-    background-color: black;
+    background-color: var(--bg_color);
     color: var(--main_color);
 }
 
@@ -22,12 +23,7 @@ a:hover {
   color: var(--main_color);
 }
 
-.image_field {
-    margin-top: 3vh;
-    padding: 10px;
-    background-color: #black;
-    text-align: center;
-}
+
 
 .navbar-brand {
     margin-left: 2vw;
@@ -51,33 +47,6 @@ a:hover {
 @keyframes alert-response{
     from {opacity :1;}
     to {opacity :0;}
-}
-
-.alert {
-    color: #970020;
-    background-color: #ffd5de;
-}
-
-.success {
-    color: #006400;
-    background-color: #90ee90;
-}
-
-.flasher {
-    font-size: 1.5em;
-    padding-left: 10%;
-    padding-right: 10%;
-    padding-top: 5%;
-    padding-bottom: 5%;
-    position: absolute;
-    float: left;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-    animation:alert-response 4s 1;
-    -webkit-animation:alert-response 4s 1;
-    animation-fill-mode: forwards;
 }
 
 .del_but {
@@ -118,18 +87,26 @@ input[type=submit]{
    align-items: center;
 }
 
-#image_field{
-   display: flex;
-   position: relative;
-   align-items: center;
+.outer_image_field {
+    padding: 10px;
+    text-align: center;
+    max-width: 550px;
+}
+
+.image_field {
+    padding: 10px;
+    background-color: #black;
+    text-align: center;
 }
 
 img{
     display: block;
     margin-left: auto;
     margin-right: auto;
-    max-width: 90%;
+    max-width: 95%;
+    max-height: 95%;
     height: auto;
+
 }
 
 .image_view_quote{
@@ -150,16 +127,19 @@ img{
 }
 
 .close-icon {
-  box-sizing:border-box;
   width:20px;
   height:20px;
   border-width:3px;
   border-style: solid;
-  border-color: var(--main_color);
+  border-color: var(--bg_color);
   border-radius:100%;
-  background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%);
-  background-color: var(--main_color);
-  box-shadow:0px 0px 5px 2px rgba(255,255,255,0.5);
+  background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%,  white 56%, transparent 56%, transparent 100%);
+  background-color: var(--bg_color);
+  box-shadow:0px 0px 5px 2px rgba(255,255,255,0.4);
   transition: all 0.3s ease;
   float: right;
+}
+
+.close-icon:hover {
+  box-shadow:0px 0px 5px 2px var(--main_color);
 }

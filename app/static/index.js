@@ -65,25 +65,30 @@ moreImages.onmessage = function(event) {
     img_title = json_data.title;
     img_id = json_data.id;
     img_data_b64 = json_data.rendered_data;
+    img_description = json_data.description;
 
     var new_image = document.createElement('div');
+    new_image.classList.add('outer_image_field');
     // add title
-    new_image.innerHTML += "<center><h3>" + img_title + "</h3></center>";
+    var title = document.createElement('h3');
+    title.appendChild(document.createTextNode(img_title));
+
     new_image.classList.add('image_field');
     // add image
     var img = document.createElement('img');
     img.src = "data:image;base64," + img_data_b64;
     // add delete link
-    var del_text = document.createElement('a');
-    del_text.href = "javascript:handleDelete(" + img_id + ")";
-    del_text.appendChild(document.createTextNode("Hide"));
+    var text = document.createElement('div');
+    text.appendChild(document.createTextNode(img_description));
     //new_image.appendChild(del_text);
     var cross = document.createElement('a');
     cross.classList.add('close-icon');
     cross.href = "javascript:handleDelete(" + img_id + ")";
 
+    new_image.appendChild(title);
     new_image.appendChild(cross);
     new_image.appendChild(img);
+    new_image.appendChild(text);
     new_image.id = img_id
 
     // add image element to container
