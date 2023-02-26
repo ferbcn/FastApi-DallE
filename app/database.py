@@ -12,11 +12,6 @@ DB_PORT = '5432'
 
 
 # Self Hosted DB on Linode
-DB_NAME = 'dalle'
-DB_USER = 'postgres'
-DB_PASSWORD = 'lE9F7TRIJdh-LUqW'
-DB_URL = '139.162.170.137'
-DB_PORT = '5432'
 
 
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./data.sqlite"
