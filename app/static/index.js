@@ -35,6 +35,10 @@ window.onscroll = function() {
             imageFeed.appendChild(newImage);
             imageQueue.pop(newImage)
             console.log("Image with ID " + newImage.id + " added to DOM")
+            // make go to top button visible
+            var myBtn = document.getElementById("myBtn");
+            myBtn.style.visibility = 'visible';
+
         }
         // if queue is empty, load spinner
         else{
@@ -109,13 +113,11 @@ function handleDelete(imageId){
 }
 
 
-// Get the button:
-let mybutton = document.getElementById("myBtn");
-
-
-
 // When the user clicks on the button, scroll to the top of the document
 function topFunction() {
-  document.body.scrollTop = 0; // For Safari
-  document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    document.body.scrollTop = 0; // For Safari
+    document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+    // make go to top button visible
+    let myBtn = document.getElementById("myBtn");
+    myBtn.style.visibility = 'hidden';
 }

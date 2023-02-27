@@ -146,22 +146,22 @@ img{
 
 #myBtn {
   /*display: none; /* Hidden by default */
+  visibility: hidden;
   position: fixed; /* Fixed/sticky position */
-  bottom: 20px; /* Place the button at the bottom of the page */
+  bottom: 40px; /* Place the button at the bottom of the page */
   right: 30px; /* Place the button 30px from the right */
   z-index: 99; /* Make sure it does not overlap */
-  border: none; /* Remove borders */
-  outline: none; /* Remove outline */
-  background-color: #555; /* Set a background color */
-  color: white; /* Text color */
-  cursor: pointer; /* Add a mouse pointer on hover */
-  padding: 5px; /* Some padding */
-  padding-left: 10px;
-  padding-right: 10px;
-  border-radius: 10px; /* Rounded corners */
-  font-size: 16px; /* Increase font size */
+
+  background-color: Transparent;
+  padding: 6px 20px;
+  color: var(--main_color);
+  font-weight: bold;
+  cursor: pointer;
+  border-color: var(--main_color);
+  border-radius: 5px;
 }
 
 #myBtn:hover {
-  background-color: var(--main_color);; /* Add a dark-grey background on hover */
+  /*background-color: var(--main_color);; /* Add a dark-grey background on hover */
+  box-shadow:0px 0px 5px 2px var(--main_color);
 }
