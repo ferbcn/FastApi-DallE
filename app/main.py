@@ -179,7 +179,7 @@ def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)
 
 
 @app.post("/signup/", response_class=HTMLResponse)
-def signup(response: Response, request: Request, username: str = Form(), password: str = Form()):
+def signup(response: Response, request: Request, username: str = Form(), password: str = Form(), user=Depends(manager)):
     print(username, password)
     db = SessionLocal()
     create_user(username, password, db)
