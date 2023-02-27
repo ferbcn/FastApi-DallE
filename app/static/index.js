@@ -2,33 +2,15 @@
 var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
 
-var current_image_offset = 5;
-var waiting_for_image = false;
+var imageOffset = 5;
+var imageQueue = [];
 
-
-function handleDelete(image_id){
-    const image = document.getElementById(image_id);
-    const list = document.getElementById("image_child");
-    list.removeChild(image);
-
-    // make post request
-    //var url = "/delete/";
-    //var params = "?image_id=" + image_id;
-    var url = "/delete/?image_id=" + image_id;
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", url, true);
-    // Send the proper header information along with the request
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    //xhr.setRequestHeader("accept", "application/json");
-    xhr.send("");
-}
-
-
+// On Init load first 5 images into queue buffer
 document.addEventListener("DOMContentLoaded", function(event) {
     // Get first queue elements
-    moreImages.send(current_image_offset);
-    current_image_offset += 5;
-    waiting_for_image = true;
+    moreImages.send(imageOffset);
+    imageOffset += 5;
+    waitingForImage = true;
 });
 
 
@@ -36,71 +18,92 @@ document.addEventListener("DOMContentLoaded", function(event) {
 // Load queue with images
 window.onscroll = function() {
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000 && waiting_for_image == false) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000) {
 
         // Pre: Images are loaded in the queue
         // load new images into queue
-        moreImages.send(current_image_offset);
-        current_image_offset += 5;
-        waiting_for_image = true;
-
         // if queue is emtpy load waiting spinner
-        var element = document.getElementById("spinner");
-        //element.style.position = "absolut";
-        element.style.top = "500px";
-        element.style.visibility = 'visible';
+        if (imageQueue.length < 5){
+            moreImages.send(imageOffset);
+            imageOffset += 5;
+        }
+        // if we have images in the queue buffer add them to dom
+        if (imageQueue.length > 0){
+            // add image element to container
+            var imageFeed = document.getElementById("image_child");
+            var newImage = imageQueue[imageQueue.length-1];
+            imageFeed.appendChild(newImage);
+            imageQueue.pop(newImage)
+            console.log("Image with ID " + newImage.id + " added to DOM")
+        }
+        // if queue is empty, load spinner
+        else{
+            var element = document.getElementById("spinner");
+            //element.style.position = "absolut";
+            element.style.top = "500px";
+            element.style.visibility = 'visible';
+        }
 
     }
 }
 
-// add images to feed
-// remove images from queue
+// add images to queue buffer
 moreImages.onmessage = function(event) {
 
-    waiting_for_image = false;
     document.getElementById('spinner').style.visibility = 'hidden';
 
-    json_string = event.data;
-    json_data = JSON.parse(json_string);
-    img_title = json_data.title;
-    img_id = json_data.id;
-    img_data_b64 = json_data.rendered_data;
-    img_description = json_data.description;
+    jsonString = event.data;
+    jsonData = JSON.parse(jsonString);
+    imgTitle = jsonData.title;
+    imgId = jsonData.id;
+    imgData64 = jsonData.rendered_data;
+    imgDescription = jsonData.description;
 
-    var new_image = document.createElement('div');
-    new_image.classList.add('outer_image_field');
+    var newImage = document.createElement('div');
+    newImage.classList.add('outer_image_field');
+    newImage.classList.add('image_field');
+
     // add title
     var title = document.createElement('h3');
-    title.appendChild(document.createTextNode(img_title));
+    title.appendChild(document.createTextNode(imgTitle));
 
-    new_image.classList.add('image_field');
     // add image
     var img = document.createElement('img');
-    img.src = "data:image;base64," + img_data_b64;
-    // add delete link
+    img.src = "data:image;base64," + imgData64;
+
     var text = document.createElement('div');
-    text.appendChild(document.createTextNode(img_description));
-    //new_image.appendChild(del_text);
+    text.appendChild(document.createTextNode(imgDescription));
+
+    // add close button to image
     var cross = document.createElement('a');
     cross.classList.add('close-icon');
-    cross.href = "javascript:handleDelete(" + img_id + ")";
+    cross.href = "javascript:handleDelete(" + imgId + ")";
 
-    new_image.appendChild(title);
-    new_image.appendChild(cross);
-    new_image.appendChild(img);
-    new_image.appendChild(text);
-    new_image.id = img_id
+    newImage.appendChild(title);
+    newImage.appendChild(cross);
+    newImage.appendChild(img);
+    newImage.appendChild(text);
+    newImage.id = imgId
 
-    // add image element to container
-    var generatedImage = document.getElementById("image_child");
-    // if list is too long remove top item
-    /*
-    if (generatedImage.childNodes.length > 40){
-        var first = generatedImage.firstElementChild;
-        generatedImage.removeChild(first);
-    }
-    */
-    generatedImage.appendChild(new_image);
-    console.log("Image with ID " + img_id + " added to DOM")
+    // add image to queue
+    imageQueue.push(newImage);
+    console.log("Image with ID " + newImage.id + " added to Queue")
+}
 
+
+// Hide (and delete if logged in) of images in the feed
+function handleDelete(imageId){
+    // delete image from DOM
+    const image = document.getElementById(imageId);
+    const list = document.getElementById("image_child");
+    list.removeChild(image);
+
+    // make post request (for deletion from DB)
+    var url = "/delete/?image_id=" + imageId;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+    // Send the proper header information along with the request
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    //xhr.setRequestHeader("accept", "application/json");
+    xhr.send("");
 }
