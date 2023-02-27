@@ -7,6 +7,9 @@
     <div id="login_child">
         <h2>Login</h2>
         <br>
+        {% if alert_message %}
+            <h6>{{alert_message}}</h6>
+        {% endif %}
         <br>
         <form method="POST" action="/login">
             Username:<input class="form-control" name="username" type="text" placeholder="username" required>

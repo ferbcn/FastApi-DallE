@@ -6,6 +6,6 @@ class NotAuthenticatedException(Exception):
     pass
 
     # these two argument are mandatory
-    def exc_handler(request, exc):
-        return templates.TemplateResponse("login.html", {"request": request})
+    def exc_handler(request, exc, message="Not authorized, please log in first!"):
+        return templates.TemplateResponse("login.html", {"request": request, "alert_message": message})
         #return RedirectResponse(url='/loginform/')
