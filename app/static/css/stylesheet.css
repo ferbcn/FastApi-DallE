@@ -153,7 +153,7 @@ img{
   z-index: 99; /* Make sure it does not overlap */
 
   background-color: Transparent;
-  padding: 6px 20px;
+  padding: 4px 10px;
   color: var(--main_color);
   font-weight: bold;
   cursor: pointer;

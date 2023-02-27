@@ -18,6 +18,13 @@ document.addEventListener("DOMContentLoaded", function(event) {
 // Load queue with images
 window.onscroll = function() {
 
+    if (window.pageYOffset > 1000) {
+        // make go to top button visible
+        var myBtn = document.getElementById("myBtn");
+        myBtn.style.visibility = 'visible';
+    }
+
+
     if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000) {
 
         // Pre: Images are loaded in the queue
@@ -33,17 +40,13 @@ window.onscroll = function() {
             var imageFeed = document.getElementById("image_child");
             var newImage = imageQueue[imageQueue.length-1];
             imageFeed.appendChild(newImage);
-            imageQueue.pop(newImage)
-            console.log("Image with ID " + newImage.id + " added to DOM")
-            // make go to top button visible
-            var myBtn = document.getElementById("myBtn");
-            myBtn.style.visibility = 'visible';
+            imageQueue.pop(newImage);
+            console.log("Image with ID " + newImage.id + " added to DOM");
 
         }
         // if queue is empty, load spinner
         else{
             var element = document.getElementById("spinner");
-            //element.style.position = "absolut";
             element.style.top = "500px";
             element.style.visibility = 'visible';
         }
