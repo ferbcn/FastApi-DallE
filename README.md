@@ -20,4 +20,4 @@ Image generation with OpenAI's Dall-E engine.
 * ssl
 
 
-[art-intel.site](https://art-intel.site)
+[https://art-intel.site](https://art-intel.site)
