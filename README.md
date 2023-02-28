@@ -13,11 +13,8 @@ Image generation with OpenAI's Dall-E engine.
 * S3 Object Storage
 
 ## Deployment
-* Ubuntu 
-* Docker
-* python
-* asgi-unicorn
+* Docker on Ubuntu Instance in the cloud
+* asgi/uvicorn
 * ssl
-
 
 [https://art-intel.site](https://art-intel.site)
