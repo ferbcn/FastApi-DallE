@@ -138,10 +138,10 @@ img{
   border-width:3px;
   border-style: solid;
   border-color: var(--bg_color);
-  border-radius:100%;
+  border-radius: 100%;
   background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%,  white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%,  white 56%, transparent 56%, transparent 100%);
   background-color: var(--bg_color);
-  box-shadow:0px 0px 5px 2px rgba(255,255,255,0.4);
+  box-shadow:0px 0px 5px 1px rgba(255,255,255,0.4);
   transition: all 0.3s ease;
   float: right;
 }
@@ -162,9 +162,4 @@ img{
   cursor: pointer;
   border-color: var(--main_color);
   border-radius: 5px;
-}
-
-#myBtn:hover {
-  /*background-color: var(--main_color);; /* Add a dark-grey background on hover */
-  box-shadow:0px 0px 5px 2px var(--main_color);
 }

@@ -121,6 +121,6 @@ function topFunction() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
     // make go to top button visible
-    let myBtn = document.getElementById("myBtn");
+    var myBtn = document.getElementById("myBtn");
     myBtn.style.visibility = 'hidden';
 }
