@@ -20,4 +20,4 @@ asgi-unicorn
 ssl
 
 
-[www.art-intel.site](http://www.art-intel.site)
+[art-intel.site](https://art-intel.site)
