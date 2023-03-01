@@ -34,7 +34,6 @@ def get_images_from_db(db: Session, skip: int = 0, limit: int = 10):
 
 
 def save_image_in_db(db, title, data, filename, url="", description="", user_id=1):
-    #db_item = FileContent(**item.dict(), owner_id=user_id)
     render_file = render_picture(data)
     db_item = FileContent(title=title, filename=filename, rendered_data=render_file, url=url, description=description, user_id=user_id)
     db.add(db_item)

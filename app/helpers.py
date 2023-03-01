@@ -4,9 +4,7 @@ import boto3
 import openai
 from datetime import datetime
 import os
-
 import requests
-
 from app.crud import save_image_in_db, get_last_image_id
 
 # Fetch quote of the day from here
@@ -106,3 +104,4 @@ def image_workflow(title, content, user, db):
         img_id = None
 
     return img_url, img_id
+
