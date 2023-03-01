@@ -1,5 +1,5 @@
 # Image AI
-![Screenshot](https://github.com/ferbcn/FastApi-DallE/blob/main/app/static/images/ai_logo.png?raw=true)
+![Logo](https://github.com/ferbcn/FastApi-DallE/blob/main/app/static/images/ai_logo.png?raw=true)
 
 ## Description
 Image generation with OpenAI's Dall-E engine.
@@ -18,3 +18,5 @@ Image generation with OpenAI's Dall-E engine.
 * ssl
 
 [https://art-intel.site](https://art-intel.site)
+
+![Logo](https://github.com/ferbcn/FastApi-DallE/blob/main/app/static/images/screenshot.png?raw=true)
