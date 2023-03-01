@@ -158,7 +158,9 @@ def quote(request: Request, title: str = Form(), content: str = Form(), db: Sess
     img_url, img_id = image_workflow(title, content, user, db)
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
     quote_author = {"quote": content, "author": title}
-    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "img_object": json_object})
+    if user:
+        authorized = True
+    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "img_object": json_object, "authorized": authorized})
 
 
 @app.get("/create/", response_class=HTMLResponse)
@@ -169,16 +171,20 @@ def create(request: Request):
 @app.post("/create/", response_class=HTMLResponse)
 def create(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db), user=Depends(manager)):
     img_url, img_id = image_workflow(title, content, user, db)
+    if user:
+        authorized = True
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
-    return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object})
+    return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object, "authorized": authorized})
 
 
 @app.get("/about/", response_class=HTMLResponse)
 def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)):
+    if user:
+        authorized = True
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
-    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images})
+    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images, "authorized": authorized})
 
 
 @app.post("/signup/", response_class=HTMLResponse)
