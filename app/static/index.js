@@ -1,6 +1,13 @@
 var imageOffset = 5;
 var imageQueue = [];
 
+var isAuth = false;
+
+function setJSAuthorization(auth){
+    isAuth = auth;
+    if (isAuth) console.log("User Authorized!");
+    else console.log("User Not authorized!");
+};
 
 //moreImages = new WebSocket("ws://127.0.0.1:8000/moreImages");
 var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
@@ -15,7 +22,14 @@ moreImages.onopen = (event) => {
         waitingForImage = true;
     });
     console.log("First image request sent!");
+
 };
+
+function dispDetails()
+{
+    titleStr = "firstTitle";
+    console.log(config[titleStr]);
+}
 
 // add images to queue buffer
 moreImages.onmessage = function(event) {
@@ -33,26 +47,23 @@ moreImages.onmessage = function(event) {
     var newImage = document.createElement('div');
     newImage.classList.add('outer_image_field');
     newImage.classList.add('image_field');
-
     // add title
     var title = document.createElement('h3');
     title.appendChild(document.createTextNode(imgTitle));
-
     // add image
     var img = document.createElement('img');
     img.src = "data:image;base64," + imgData64;
-
     var text = document.createElement('div');
     text.appendChild(document.createTextNode(imgDescription));
-
     // add close button to image
     var cross = document.createElement('a');
     cross.classList.add('close-icon');
     cross.href = "javascript:handleDelete(" + imgId + ")";
 
     newImage.appendChild(title);
-
-    newImage.appendChild(cross);
+    if (isAuth){
+        newImage.appendChild(cross);
+    }
     newImage.appendChild(img);
     newImage.appendChild(text);
     newImage.id = imgId

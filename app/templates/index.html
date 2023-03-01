@@ -3,6 +3,13 @@
 {% block content %}
 <script src="{{ url_for('static', path='index.js') }}"></script>
 
+<!-- set JS authorization flag -->
+{% if authorized %}
+    <script>setJSAuthorization(true);</script>
+{% else %}
+    <script>setJSAuthorization(false);</script>
+{% endif %}
+
   <div id="image_parent">
     <button onclick="topFunction()" id="myBtn" title="Go to top">Top</button>
 
@@ -11,9 +18,9 @@
             <div class='outer_image_field image_field' id="{{ image['id'] }}">
                 <div><h3>{{ image['title'] }}</h3></div>
                     {% if authorized %}
-                    <a href="javascript:handleDelete({{image['id']}})">
-                        <div class="close-icon"></div>
-                    </a>
+                        <a href="javascript:handleDelete({{image['id']}})">
+                            <div class="close-icon"></div>
+                        </a>
                     {% endif %}
                     <img src="data:;base64,{{ image['rendered_data'] }}"/>
                 <div><h6>{{ image.description }}</h6></div>
@@ -22,5 +29,7 @@
 
     </div>
   </div>
+
+
 
 {% endblock %}
