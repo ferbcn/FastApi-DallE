@@ -96,12 +96,14 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
         data=dict(sub=username),
         expires=TOKEN_EXP_TIME
     )
-    manager.set_cookie(response, access_token)
+
+    # manager.set_cookie(response, access_token)
     # return {'access_token': access_token, 'token_type': 'bearer', }
-    resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
+    #return JSONResponse({"status": "success"})
+
+    resp = RedirectResponse(url="/index", status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
     return resp
-    #return JSONResponse({"status": "success"})
 
 
 #
@@ -132,10 +134,18 @@ def logout(request: Request, response: Response, user=Depends(manager)):
     #return JSONResponse({"status": "success"})
 
 
+# Basic Index view
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
+
+
+# same view as "/" but with authorized functionality
+@app.get("/index", response_class=HTMLResponse)
+def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
+    images = get_images_from_db(db, skip=skip, limit=limit)
+    return templates.TemplateResponse("index.html", {"request": request, "images": images, "authorized": True})
 
 
 @app.get("/quote/", response_class=HTMLResponse)

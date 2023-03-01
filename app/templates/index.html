@@ -10,9 +10,11 @@
         {% for image in images %}
             <div class='outer_image_field image_field' id="{{ image['id'] }}">
                 <div><h3>{{ image['title'] }}</h3></div>
+                    {% if authorized %}
                     <a href="javascript:handleDelete({{image['id']}})">
                         <div class="close-icon"></div>
                     </a>
+                    {% endif %}
                     <img src="data:;base64,{{ image['rendered_data'] }}"/>
                 <div><h6>{{ image.description }}</h6></div>
             </div>
