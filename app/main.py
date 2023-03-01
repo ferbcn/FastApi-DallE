@@ -127,11 +127,10 @@ def auth(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Se
 def logout(request: Request, response: Response, user=Depends(manager)):
     # manager.set_cookie(response, None)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
-    # clear cookie in some way
-    response.delete_cookie("access_token")
-    # This does not logout
+    # clear cookie
+    # response.delete_cookie("access_token") # this does not work, but why?
+    manager.set_cookie(response, "")
     return response
-    #return JSONResponse({"status": "success"})
 
 
 # Basic Index view
