@@ -1,82 +1,76 @@
 var imageOffset = 5;
 var imageQueue = [];
 
-var moreImages;
 
-function connectWS() {
-    //moreImages = new WebSocket("ws://127.0.0.1:8000/moreImages");
-    var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
+//moreImages = new WebSocket("ws://127.0.0.1:8000/moreImages");
+var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 
-    moreImages.onopen = (event) => {
-        console.log("Socket open!");
-        // On Init load first 5 images into queue buffer
-        document.addEventListener("DOMContentLoaded", function(event) {
-            // Get first queue elements
-            moreImages.send(imageOffset);
-            imageOffset += 5;
-            waitingForImage = true;
-        });
-        console.log("First image request sent!");
-    };
+moreImages.onopen = (event) => {
+    console.log("Socket open!");
+    // On Init load first 5 images into queue buffer
+    document.addEventListener("DOMContentLoaded", function(event) {
+        // Get first queue elements
+        moreImages.send(imageOffset);
+        imageOffset += 5;
+        waitingForImage = true;
+    });
+    console.log("First image request sent!");
+};
 
-    // add images to queue buffer
-    moreImages.onmessage = function(event) {
+// add images to queue buffer
+moreImages.onmessage = function(event) {
 
-        // hide spinner animation
-        document.getElementById('spinner').style.visibility = 'hidden';
+    // hide spinner animation
+    document.getElementById('spinner').style.visibility = 'hidden';
 
-        jsonString = event.data;
-        jsonData = JSON.parse(jsonString);
-        imgTitle = jsonData.title;
-        imgId = jsonData.id;
-        imgData64 = jsonData.rendered_data;
-        imgDescription = jsonData.description;
+    jsonString = event.data;
+    jsonData = JSON.parse(jsonString);
+    imgTitle = jsonData.title;
+    imgId = jsonData.id;
+    imgData64 = jsonData.rendered_data;
+    imgDescription = jsonData.description;
 
-        var newImage = document.createElement('div');
-        newImage.classList.add('outer_image_field');
-        newImage.classList.add('image_field');
+    var newImage = document.createElement('div');
+    newImage.classList.add('outer_image_field');
+    newImage.classList.add('image_field');
 
-        // add title
-        var title = document.createElement('h3');
-        title.appendChild(document.createTextNode(imgTitle));
+    // add title
+    var title = document.createElement('h3');
+    title.appendChild(document.createTextNode(imgTitle));
 
-        // add image
-        var img = document.createElement('img');
-        img.src = "data:image;base64," + imgData64;
+    // add image
+    var img = document.createElement('img');
+    img.src = "data:image;base64," + imgData64;
 
-        var text = document.createElement('div');
-        text.appendChild(document.createTextNode(imgDescription));
+    var text = document.createElement('div');
+    text.appendChild(document.createTextNode(imgDescription));
 
-        // add close button to image
-        var cross = document.createElement('a');
-        cross.classList.add('close-icon');
-        cross.href = "javascript:handleDelete(" + imgId + ")";
+    // add close button to image
+    var cross = document.createElement('a');
+    cross.classList.add('close-icon');
+    cross.href = "javascript:handleDelete(" + imgId + ")";
 
-        newImage.appendChild(title);
+    newImage.appendChild(title);
 
-        newImage.appendChild(cross);
-        newImage.appendChild(img);
-        newImage.appendChild(text);
-        newImage.id = imgId
+    newImage.appendChild(cross);
+    newImage.appendChild(img);
+    newImage.appendChild(text);
+    newImage.id = imgId
 
-        // add image to queue
-        imageQueue.push(newImage);
-        console.log("Image with ID " + newImage.id + " added to Queue")
-    };
+    // add image to queue
+    imageQueue.push(newImage);
+    console.log("Image with ID " + newImage.id + " added to Queue")
+};
 
-    moreImages.onclose = function(event) {
-        console.log('Socket closed, reopening...');
-        setTimeout(function() {connectWS();}, 1000);
-    };
+moreImages.onclose = function(event) {
+    console.log('Socket closed, reopening...');
+    setTimeout(function() {moreImages = new WebSocket("wss://art-intel.site:443/moreImages");}, 1000);
+};
 
-    moreImages.onerror = function(err) {
-        console.error('Socket encountered error: ', err.message, 'Closing socket');
-        ws.close();
-    };
-}
-
-// Open and start WebSocket
-connectWS();
+moreImages.onerror = function(err) {
+    console.error('Socket encountered error: ', err.message, 'Closing socket');
+    ws.close();
+};
 
 
 // window scroll detect
