@@ -113,6 +113,8 @@ window.onscroll = function() {
             var element = document.getElementById("spinner");
             element.style.top = "500px";
             element.style.visibility = 'visible';
+            // reset flag in case of network issues
+            lastWsRequestReceived = true;
         }
     }
 }
