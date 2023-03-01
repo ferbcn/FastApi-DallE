@@ -90,7 +90,7 @@ window.onscroll = function() {
         myBtn.style.visibility = 'visible';
     }
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000 && lastWsRequestReceived) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000) {
         // Pre: Images are loaded in the queue
         // if queue is emtpy load request new images over ws
         if (imageQueue.length < 5){
