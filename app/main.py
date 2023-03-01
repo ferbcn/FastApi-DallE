@@ -39,7 +39,7 @@ app.add_exception_handler(NotAuthenticatedException, NotAuthenticatedException.e
 
 favicon_path = 'app/static/images/favicon.ico'
 
-TOKEN_EXP_TIME = timedelta(minutes=3)
+TOKEN_EXP_TIME = timedelta(hours=12)
 
 # Dependency
 def get_db():
@@ -106,7 +106,6 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
     return resp
 
 
-#
 # the python-multipart package is required to use the OAuth2PasswordRequestForm
 @app.post('/auth')
 def auth(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
@@ -128,8 +127,8 @@ def logout(request: Request, response: Response, user=Depends(manager)):
     # manager.set_cookie(response, None)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     # clear cookie
-    # response.delete_cookie("access_token") # this does not work, but why?
-    manager.set_cookie(response, "")
+    # response.delete_cookie("access_token")    # this does not work, but why? cookie is read only
+    manager.set_cookie(response, "")    # this does work
     return response
 
 
@@ -142,7 +141,7 @@ def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends
 
 # same view as "/" but with authorized functionality
 @app.get("/index", response_class=HTMLResponse)
-def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
+def authindex(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
     images = get_images_from_db(db, skip=skip, limit=limit)
     return templates.TemplateResponse("index.html", {"request": request, "images": images, "authorized": True})
 

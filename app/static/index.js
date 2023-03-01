@@ -5,13 +5,17 @@ var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
 var imageOffset = 5;
 var imageQueue = [];
 
-// On Init load first 5 images into queue buffer
-document.addEventListener("DOMContentLoaded", function(event) {
-    // Get first queue elements
-    moreImages.send(imageOffset);
-    imageOffset += 5;
-    waitingForImage = true;
-});
+moreImages.onopen = (event) => {
+    console.log("Socket open!");
+    // On Init load first 5 images into queue buffer
+    document.addEventListener("DOMContentLoaded", function(event) {
+        // Get first queue elements
+        moreImages.send(imageOffset);
+        imageOffset += 5;
+        waitingForImage = true;
+    });
+    console.log("First image request sent!");
+};
 
 
 // window scroll detect
@@ -87,6 +91,9 @@ moreImages.onmessage = function(event) {
     cross.href = "javascript:handleDelete(" + imgId + ")";
 
     newImage.appendChild(title);
+
+    //console.log(readCookie("adminer-key"));
+
     newImage.appendChild(cross);
     newImage.appendChild(img);
     newImage.appendChild(text);
@@ -123,4 +130,15 @@ function topFunction() {
     // make go to top button visible
     var myBtn = document.getElementById("myBtn");
     myBtn.style.visibility = 'hidden';
+}
+
+function readCookie(name) {
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+	for(var i=0;i < ca.length;i++) {
+		var c = ca[i];
+		while (c.charAt(0)==' ') c = c.substring(1,c.length);
+		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+	}
+	return null;
 }
