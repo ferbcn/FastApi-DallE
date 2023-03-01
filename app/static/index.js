@@ -1,6 +1,6 @@
 var imageOffset = 5;
 var imageQueue = [];
-
+var lastWsRequestReceived = false;
 var isAuth = false;
 
 function setJSAuthorization(auth){
@@ -25,14 +25,10 @@ moreImages.onopen = (event) => {
 
 };
 
-function dispDetails()
-{
-    titleStr = "firstTitle";
-    console.log(config[titleStr]);
-}
-
 // add images to queue buffer
 moreImages.onmessage = function(event) {
+
+    lastWsRequestReceived = true;
 
     // hide spinner animation
     document.getElementById('spinner').style.visibility = 'hidden';
@@ -94,12 +90,13 @@ window.onscroll = function() {
         myBtn.style.visibility = 'visible';
     }
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000 && lastWsRequestReceived) {
         // Pre: Images are loaded in the queue
         // if queue is emtpy load request new images over ws
         if (imageQueue.length < 5){
             moreImages.send(imageOffset);
             imageOffset += 5;
+            lastWsRequestReceived = false;
         }
         // if we have images in the queue buffer add them to dom
         if (imageQueue.length > 0){

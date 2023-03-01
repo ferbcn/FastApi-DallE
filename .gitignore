@@ -1,2 +1,5 @@
 # Project exclude paths
 /venv/
+/cert/
+/db_backups/
+/alembic.ini
