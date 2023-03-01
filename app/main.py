@@ -69,11 +69,6 @@ def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), us
     return users
 
 
-@app.get("/images/")
-def read_images(image_id: int, db: Session = Depends(get_db)):
-    return get_image_by_id(db, image_id)
-
-
 @app.post("/users/")
 def create_user(username, password, db: Session = Depends(get_db), user=Depends(manager)):
     newuser = get_user_by_username(db, username=username)

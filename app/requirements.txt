@@ -10,3 +10,4 @@ werkzeug
 psycopg2-binary
 python-multipart
 fastapi-login
+alembic
