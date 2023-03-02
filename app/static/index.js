@@ -1,6 +1,6 @@
 var imageOffset = 5;
 var imageQueue = [];
-var lastWsRequestReceived = false;
+
 var isAuth = false;
 
 function setJSAuthorization(auth){
@@ -27,8 +27,6 @@ moreImages.onopen = (event) => {
 
 // add images to queue buffer
 moreImages.onmessage = function(event) {
-
-    lastWsRequestReceived = true;
 
     // hide spinner animation
     document.getElementById('spinner').style.visibility = 'hidden';
@@ -96,7 +94,6 @@ window.onscroll = function() {
         if (imageQueue.length < 5){
             moreImages.send(imageOffset);
             imageOffset += 5;
-            lastWsRequestReceived = false;
         }
         // if we have images in the queue buffer add them to dom
         if (imageQueue.length > 0){
@@ -114,7 +111,6 @@ window.onscroll = function() {
             element.style.top = "500px";
             element.style.visibility = 'visible';
             // reset flag in case of network issues
-            lastWsRequestReceived = true;
         }
     }
 }

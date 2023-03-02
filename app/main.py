@@ -52,7 +52,7 @@ def get_db():
 
 @manager.user_loader()
 def load_user(username: str):  # could also be an asynchronous function
-    db = SessionLocal()     # No dependenca injection on non route functions, is this a hack?
+    db = SessionLocal()     # No dependency injection on non route functions, is this a hack?
     user = get_user_by_username(db, username=username)
     return user
 
@@ -64,7 +64,6 @@ async def favicon():
 
 @app.get("/users/")
 def read_users(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), user=Depends(manager)):
-    print(user)
     users = get_users(db, skip=skip, limit=limit)
     return users
 
@@ -136,19 +135,13 @@ def logout(request: Request, response: Response, user=Depends(manager)):
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
+    user = Depends(manager)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
-
-
-# same view as "/" but with authorized functionality
-@app.get("/index", response_class=HTMLResponse)
-def authindex(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
-    images = get_images_from_db(db, skip=skip, limit=limit)
-    return templates.TemplateResponse("index.html", {"request": request, "images": images, "authorized": True})
 
 
 @app.get("/quote/", response_class=HTMLResponse)
 def quote(request: Request):
-    # GET Request
+    user = Depends(manager)
     quote_author = retrieve_quote()
     return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author})
 
@@ -158,9 +151,7 @@ def quote(request: Request, title: str = Form(), content: str = Form(), db: Sess
     img_url, img_id = image_workflow(title, content, user, db)
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
     quote_author = {"quote": content, "author": title}
-    if user:
-        authorized = True
-    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "img_object": json_object, "authorized": authorized})
+    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "img_object": json_object, "authorized": True})
 
 
 @app.get("/create/", response_class=HTMLResponse)
@@ -171,20 +162,16 @@ def create(request: Request):
 @app.post("/create/", response_class=HTMLResponse)
 def create(request: Request, title: str = Form(), content: str = Form(), db: Session = Depends(get_db), user=Depends(manager)):
     img_url, img_id = image_workflow(title, content, user, db)
-    if user:
-        authorized = True
     json_object = {"img_title": title, "img_url": img_url, "img_text": content, "img_id": img_id}
-    return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object, "authorized": authorized})
+    return templates.TemplateResponse("create.html", {"request": request, "img_object": json_object, "authorized": True})
 
 
 @app.get("/about/", response_class=HTMLResponse)
 def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)):
-    if user:
-        authorized = True
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
-    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images, "authorized": authorized})
+    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images, "authorized": True})
 
 
 @app.post("/signup/", response_class=HTMLResponse)
