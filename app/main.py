@@ -167,7 +167,7 @@ def quote(request: Request, title: str = Form(), content: str = Form(), db: Sess
 
 
 @app.get("/create/", response_class=HTMLResponse)
-def create(request: Request):
+def create(request: Request, user=Depends(manager)):
     return templates.TemplateResponse("create.html", {"request": request})
 
 
