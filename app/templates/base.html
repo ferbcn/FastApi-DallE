@@ -18,22 +18,30 @@
 <body>
 
     <nav class="navbar navbar-sticky navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="{{ url_for('index') }}">Gallery</a>
+        {% if authorized %}
+            <a class="navbar-brand" href="{{ url_for('authindex') }}">Gallery</a>
+        {% else %}
+            <a class="navbar-brand" href="{{ url_for('index') }}">Gallery</a>
+        {% endif %}
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav">
                 <li class="nav-item dropdown">
-                    <a class="nav-link" href="{{ url_for('quote') }}">
-                    Generate
-                    </a>
+                    {% if authorized %}
+                        <a class="nav-link" href="{{ url_for('authquote') }}">Generate</a>
+                    {% else %}
+                        <a class="nav-link" href="{{ url_for('quote') }}">Generate</a>
+                    {% endif %}
                 </li>
             </ul>
             <ul class="navbar-nav">
-                <a class="nav-link" href="{{ url_for('create') }}">
-                    Create
-                </a>
+                {% if authorized %}
+                    <a class="nav-link" href="{{ url_for('authcreate') }}">Create</a>
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('create') }}">Create</a>
+                {% endif %}
             </ul>
             <ul class="navbar-nav">
                 <a class="nav-link" href="{{ url_for('about') }}">

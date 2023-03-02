@@ -4,6 +4,7 @@ var wsUrl = "wss://art-intel.site:443/moreImages";
 var imageOffset = 5;
 var imageQueue = [];
 
+var isScrollingBack = false;
 var isAuth = false;
 
 
@@ -85,9 +86,12 @@ moreImages.onerror = function(err) {
 // Load queue with images
 window.onscroll = function() {
 
-    if (window.pageYOffset > 1000) {
-        // make go to top button visible
-        var myBtn = document.getElementById("myBtn");
+    // make scroll to top button visible
+    var myBtn = document.getElementById("myBtn");
+    if (window.pageYOffset < 800) {
+        myBtn.style.visibility = 'hidden';
+    }
+    else{
         myBtn.style.visibility = 'visible';
     }
 
@@ -141,7 +145,4 @@ function handleDelete(imageId){
 function topFunction() {
     document.body.scrollTop = 0; // For Safari
     document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
-    // make go to top button visible
-    var myBtn = document.getElementById("myBtn");
-    myBtn.style.visibility = 'hidden';
 }

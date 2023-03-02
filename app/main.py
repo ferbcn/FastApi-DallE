@@ -148,9 +148,14 @@ def authindex(request: Request, skip: int = 0, limit: int = 5, db: Session = Dep
 
 @app.get("/quote/", response_class=HTMLResponse)
 def quote(request: Request):
-    user = Depends(manager)
     quote_author = retrieve_quote()
     return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author})
+
+
+@app.get("/authquote/", response_class=HTMLResponse)
+def authquote(request: Request, user=Depends(manager)):
+    quote_author = retrieve_quote()
+    return templates.TemplateResponse("quote.html", {"request": request, "quote": quote_author, "authorized": True})
 
 
 @app.post("/quote/", response_class=HTMLResponse)
@@ -164,6 +169,11 @@ def quote(request: Request, title: str = Form(), content: str = Form(), db: Sess
 @app.get("/create/", response_class=HTMLResponse)
 def create(request: Request):
     return templates.TemplateResponse("create.html", {"request": request})
+
+
+@app.get("/authcreate/", response_class=HTMLResponse)
+def authcreate(request: Request):
+    return templates.TemplateResponse("create.html", {"request": request, "authorized": True})
 
 
 @app.post("/create/", response_class=HTMLResponse)
