@@ -1,7 +1,11 @@
+var wsUrl = "wss://art-intel.site:443/moreImages";
+// var wsUrl = "ws://127.0.0.1:8000/moreImages";
+
 var imageOffset = 5;
 var imageQueue = [];
 
 var isAuth = false;
+
 
 function setJSAuthorization(auth){
     isAuth = auth;
@@ -9,17 +13,16 @@ function setJSAuthorization(auth){
     else console.log("User Not authorized!");
 };
 
-//moreImages = new WebSocket("ws://127.0.0.1:8000/moreImages");
-var moreImages = new WebSocket("wss://art-intel.site:443/moreImages");
+// Open WebSocket
+var moreImages = new WebSocket(wsUrl);
 
 moreImages.onopen = (event) => {
     console.log("Socket open!");
-    // On Init load first 5 images into queue buffer
+    // On init load first 5 images into queue buffer
     document.addEventListener("DOMContentLoaded", function(event) {
         // Get first queue elements
         moreImages.send(imageOffset);
         imageOffset += 5;
-        waitingForImage = true;
     });
     console.log("First image request sent!");
 
@@ -69,7 +72,7 @@ moreImages.onmessage = function(event) {
 
 moreImages.onclose = function(event) {
     console.log('Socket closed, reopening...');
-    setTimeout(function() {moreImages = new WebSocket("wss://art-intel.site:443/moreImages");}, 1000);
+    setTimeout(function() {moreImages = new WebSocket(wsUrl);}, 1000);
 };
 
 moreImages.onerror = function(err) {
@@ -88,11 +91,13 @@ window.onscroll = function() {
         myBtn.style.visibility = 'visible';
     }
 
-    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight - 1000) {
+    // console.log(imageQueue.length);
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
         // Pre: Images are loaded in the queue
         // if queue is emtpy load request new images over ws
         if (imageQueue.length < 5){
             moreImages.send(imageOffset);
+            console.log("Image request sent with offset " + imageOffset);
             imageOffset += 5;
         }
         // if we have images in the queue buffer add them to dom
