@@ -9,6 +9,8 @@
         <br>
         {% if alert_message %}
             <h6>{{alert_message}}</h6>
+        {% else  %}
+            <br>
         {% endif %}
         <br>
         <form method="POST" action="/login">

@@ -96,11 +96,7 @@ def login(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: S
         expires=TOKEN_EXP_TIME
     )
 
-    # manager.set_cookie(response, access_token)
-    # return {'access_token': access_token, 'token_type': 'bearer', }
-    #return JSONResponse({"status": "success"})
-
-    resp = RedirectResponse(url="/index", status_code=status.HTTP_302_FOUND)
+    resp = RedirectResponse(url="/authindex", status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
     return resp
 
@@ -123,26 +119,26 @@ def auth(response: Response, data: OAuth2PasswordRequestForm = Depends(), db: Se
 
 @app.get("/logout/", response_class=HTMLResponse)
 def logout(request: Request, response: Response, user=Depends(manager)):
-    # manager.set_cookie(response, None)
     response = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     # clear cookie
+    # manager.set_cookie(response, None)
     # response.delete_cookie("access_token")    # this does not work, but why? cookie is read only
     manager.set_cookie(response, "")    # this does work
     return response
 
 
 # Basic Index view
+@app.get("/index", response_class=HTMLResponse)
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
-    user = Depends(manager)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
 
+
 # Basic Index view
-@app.get("/index", response_class=HTMLResponse)
+@app.get("/authindex", response_class=HTMLResponse)
 def authindex(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
     images = get_images_from_db(db, skip=skip, limit=limit)
-
     return templates.TemplateResponse("index.html", {"request": request, "images": images, "authorized": True})
 
 
