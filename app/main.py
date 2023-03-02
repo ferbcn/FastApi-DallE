@@ -138,6 +138,13 @@ def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends
     user = Depends(manager)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
 
+# Basic Index view
+@app.get("/index", response_class=HTMLResponse)
+def authindex(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db), user=Depends(manager)):
+    images = get_images_from_db(db, skip=skip, limit=limit)
+
+    return templates.TemplateResponse("index.html", {"request": request, "images": images, "authorized": True})
+
 
 @app.get("/quote/", response_class=HTMLResponse)
 def quote(request: Request):

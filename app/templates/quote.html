@@ -4,7 +4,6 @@
 
 <script src="{{ url_for('static', path='scripts.js') }}"></script>
 
-
 <div class="container">
   <div id="parent">
     <div id="child">
@@ -35,14 +34,18 @@
         <div id="image_child">
             {% if img_object %}
             <div class='outer_image_field' id="{{ img_object.img_id }}">
-                <div><h3>{{ img_object.img_title }}</h3></div>
+                <div>
+                    <h3>{{ img_object.img_title }}</h3>
+                </div>
                 <div class='image_field'>
                     <a href="javascript:handleDelete({{ img_object.img_id }})">
                         <div class="close-icon"></div>
                     </a>
                     <img src="{{ img_object.img_url }}"/>
                 </div>
-                <div><h6>{{ img_object.img_text }}</h6></div>
+                <div>
+                    <h6>{{ img_object.img_text }}</h6>
+                </div>
             </div>
             {% endif %}
         </div>
