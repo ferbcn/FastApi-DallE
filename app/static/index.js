@@ -1,15 +1,8 @@
-// var wsUrl = "wss://art-intel.site:443/moreImages";
-// var wsUrl = "ws://127.0.0.1:8000/moreImages";
-var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-wsUrl = ws_scheme + '://' + window.location.host + "/moreImages"
-
-
 var imageOffset = 5;
 var imageQueue = [];
 
 var isScrollingBack = false;
 var isAuth = false;
-
 
 function setJSAuthorization(auth){
     isAuth = auth;
@@ -17,8 +10,12 @@ function setJSAuthorization(auth){
     else console.log("User Not authorized!");
 };
 
+var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+wsUrl = ws_scheme + '://' + window.location.host + "/moreImages"
+
 // Open WebSocket
 var moreImages = new WebSocket(wsUrl);
+
 
 moreImages.onopen = (event) => {
     console.log("Socket open!");
