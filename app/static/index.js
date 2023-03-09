@@ -1,5 +1,8 @@
-var wsUrl = "wss://art-intel.site:443/moreImages";
+// var wsUrl = "wss://art-intel.site:443/moreImages";
 // var wsUrl = "ws://127.0.0.1:8000/moreImages";
+var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
+wsUrl = ws_scheme + '://' + window.location.host + "/moreImages"
+
 
 var imageOffset = 5;
 var imageQueue = [];
