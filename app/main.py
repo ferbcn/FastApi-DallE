@@ -18,28 +18,27 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login.exceptions import InvalidCredentialsException
 
-# Create application
-app = FastAPI(title='FastAPI DalLE')
+from fastapi_login import LoginManager
+from app.custom_exceptions import NotAuthenticatedException
+
 
 openai.api_key = os.environ.get("OPENAI_KEY")
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+favicon_path = 'app/static/images/favicon.ico'
+
+TOKEN_EXP_TIME = timedelta(hours=12)
+
+# Create application
+app = FastAPI(title='FastAPI DalLE')
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 Base.metadata.create_all(bind=engine)
 
-from fastapi_login import LoginManager
-
-from app.custom_exceptions import NotAuthenticatedException
-
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
 manager = LoginManager(SECRET_KEY, token_url='/auth', use_cookie=True, custom_exception=NotAuthenticatedException)
 app.add_exception_handler(NotAuthenticatedException, NotAuthenticatedException.exc_handler)
-
-favicon_path = 'app/static/images/favicon.ico'
-
-TOKEN_EXP_TIME = timedelta(hours=12)
 
 # Dependency
 def get_db():
@@ -132,6 +131,8 @@ def logout(request: Request, response: Response, user=Depends(manager)):
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request, skip: int = 0, limit: int = 5, db: Session = Depends(get_db)):
     images = get_images_from_db(db, skip=skip, limit=limit)
+    for img in images:
+        print(img.filename)
     return templates.TemplateResponse("index.html", {"request": request, "images": images})
 
 

@@ -14,12 +14,16 @@ S3_KEY = os.environ.get("S3_KEY")
 S3_SECRET = os.environ.get("S3_SECRET")
 S3_URL = os.environ.get("S3_URL")
 
-linode_obj_config = {
+s3_obj_config = {
     "aws_access_key_id": S3_KEY,
     "aws_secret_access_key": S3_SECRET,
     "endpoint_url": S3_URL,
 }
 
+s3_extra_args = {
+        'ContentType': 'image/png',
+        'ACL': 'public-read'  # Set permissions to public-read
+    }
 
 def make_filename(title):
     return title.replace(" ", "_") + "_" + str(datetime.utcnow()).replace(" ", "_") + ".png"
@@ -38,13 +42,13 @@ def create_s3_upload_thread(filename, data):
 
 
 def s3_upload_job(filename, data):
-    # some long running processing here
+    # some long-running processing here
     try:
         filepath = "app/static/images/" + filename  # [len(filename)-30:]
         with open(filepath, 'wb') as f:
             f.write(data)
-        client = boto3.client("s3", **linode_obj_config)
-        client.upload_file(Filename=filepath, Bucket='DallE-Images', Key=filename)
+        client = boto3.client("s3", **s3_obj_config)
+        client.upload_file(Filename=filepath, Bucket='DallE-Images', Key=filename, ExtraArgs=s3_extra_args)
         os.remove(filepath)
         print('S3 upload done!')
     except Exception as e:
