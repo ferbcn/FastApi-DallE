@@ -12,6 +12,7 @@ DB_URL = os.environ.get('DB_URL')
 DB_PORT = os.environ.get('DB_PORT')
 
 # ALEMBIC Cheatsheet
+# update sqlalchemy connection string in alembic.ini if needed
 # $ alembic check
 # $ alembic revision --autogenerate -m "removed data (binary) from filecontent"
 # $ alembic upgrade head

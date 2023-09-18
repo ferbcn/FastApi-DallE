@@ -218,8 +218,8 @@ async def websocket_moreImages(websocket: WebSocket, db: Session = Depends(get_d
                     current_image_offset = random.randint(0, db_img_count)
                 images = get_images_from_db(db, skip=current_image_offset, limit=5)
                 for image in images:
-                    json_object = {"title": image.title, "rendered_data": image.rendered_data, "id": image.id,
-                                   "description": image.description}
+                    json_object = {"title": image.title, "id": image.id,
+                                   "description": image.description, "filename": image.filename}
                     # print(f'Sending {image} to client websocket.')
                     await websocket.send_json(json_object)
 

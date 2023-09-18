@@ -34,12 +34,12 @@ def get_images_from_db(db: Session, skip: int = 0, limit: int = 10):
 
 
 def save_image_in_db(db, title, data, filename, url="", description="", user_id=1):
-    render_file = render_picture(data)
     s3_filename = 'https://artintel.fra1.digitaloceanspaces.com/DallE-Images/' + filename
-    db_item = FileContent(title=title, filename=s3_filename, rendered_data=render_file, url=url, description=description, user_id=user_id)
+    db_item = FileContent(title=title, filename=s3_filename, url=url, description=description, user_id=user_id)
     db.add(db_item)
     db.commit()
     db.refresh(db_item)
+    print(s3_filename)
     return db_item
 
 
@@ -76,10 +76,4 @@ def delete_db_image_by_id(db, image_id: int):
         return True
     return False
 
-
-### HELPER's HELPER ###
-# needed to save the image in base64 in DB: this should be don in an object storage like S3
-def render_picture(data):
-    render_pic = base64.b64encode(data).decode('ascii')
-    return render_pic
 

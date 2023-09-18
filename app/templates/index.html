@@ -22,7 +22,7 @@
                             <div class="close-icon"></div>
                         </a>
                     {% endif %}
-                    <img src="data:;base64,{{ image['rendered_data'] }}"/>
+                    <img src="{{image['filename']}}"/>
                 <div><h6>{{ image.description }}</h6></div>
             </div>
         {% endfor %}

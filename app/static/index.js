@@ -39,8 +39,8 @@ moreImages.onmessage = function(event) {
     jsonData = JSON.parse(jsonString);
     imgTitle = jsonData.title;
     imgId = jsonData.id;
-    imgData64 = jsonData.rendered_data;
     imgDescription = jsonData.description;
+    imgUrl = jsonData.filename;
 
     var newImage = document.createElement('div');
     newImage.classList.add('outer_image_field');
@@ -50,7 +50,8 @@ moreImages.onmessage = function(event) {
     title.appendChild(document.createTextNode(imgTitle));
     // add image
     var img = document.createElement('img');
-    img.src = "data:image;base64," + imgData64;
+    //img.src = "data:image;base64," + imgData64;
+    img.src = imgUrl;
     var text = document.createElement('div');
     text.appendChild(document.createTextNode(imgDescription));
     // add close button to image
