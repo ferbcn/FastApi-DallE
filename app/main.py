@@ -170,7 +170,7 @@ def create(request: Request, title: str = Form(), content: str = Form(), db: Ses
 
 
 @app.get("/about/", response_class=HTMLResponse)
-def about(request: Request, db: Session = Depends(get_db), user=Depends(manager)):
+def about(request: Request, db: Session = Depends(get_db)):     #, user=Depends(manager)):
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
