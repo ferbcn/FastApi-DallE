@@ -174,7 +174,7 @@ def about(request: Request, db: Session = Depends(get_db)):     #, user=Depends(
     # get total images
     # get images in db
     total_images, num_images = get_db_stats(db)
-    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images, "authorized": True})
+    return templates.TemplateResponse("about.html", {"request": request, "total_images": total_images, "num_images": num_images, "authorized": False})
 
 
 @app.post("/signup/", response_class=HTMLResponse)
