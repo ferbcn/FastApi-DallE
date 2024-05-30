@@ -1,5 +1,4 @@
 # Image AI
-![Logo](https://github.com/ferbcn/FastApi-DallE/blob/main/app/static/images/ai_logo.png?raw=true)
 
 ## Description
 Image generation with OpenAI's Dall-E engine.
